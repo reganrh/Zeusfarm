@@ -19,7 +19,7 @@
 
         // Count Time 
         function makeTimer() {
-            var endTime = new Date("September 4, 2021 12:00:00 UTC");			
+            var endTime = new Date("September 5, 2021 4:30:00 UTC");			
             var endTime = (Date.parse(endTime)) / 1000;
             var now = new Date();
             var now = (Date.parse(now) / 1000);
