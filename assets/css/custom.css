@@ -1,1 +1,23 @@
 /* PLACE YOU CUSTOM STYLES IN THIS FILE */
+.nk-testimonial-2 .nk-testimonial-body::before {
+    content: "";
+    position: absolute;
+    top: -35px;
+    left: -15px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 150px;
+    font-weight: 600;
+    line-height: 135px;
+    opacity: .08;
+    z-index: -1;
+}
+
+.nk-counter-2 .nk-count {
+    margin-bottom: 10px;
+    font-size: 2rem;
+    line-height: 1;
+    color: #ff0000;
+}
+.nk-gap-0 {
+    height: 10px;
+}
