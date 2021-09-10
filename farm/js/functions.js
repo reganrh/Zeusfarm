@@ -597,7 +597,7 @@ async function pendingDefy(pid){
 	let pendingDefy = (parseInt(await farmContract.methods.pendingkins(pid, user.address).call()) / 1e18)
 /*	user.harvestable += pendingDefy
 	$('.harvestable')[0].innerHTML = user.harvestable.toFixed(6) */
-	$('.pending-kins-'+pid)[0].innerHTML = " " +pendingDefy.toFixed(8)
+	$('.pending-kins-'+pid)[0].innerHTML = " " +pendingDefy.toFixed(2)
 }
 
 async function poolBalance(pid){
