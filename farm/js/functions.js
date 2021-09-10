@@ -355,18 +355,18 @@ let ilpAuto = undefined
 const apeAddress = "0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52"
 let apeContract = undefined
 
-const defyBnbApeAddress = "0xEa24DD2824F10518dEd7cBBAF31f8c3D159E160D"
+const defyBnbApeAddress = "0xD24cf15F02D1cC4C868C303925aDF247118CAd9B"
 let defyBnbApeAuto = undefined
 
-const defyBusdApeAddress = "0x73d4Fda26cE1876E18c5b0088E297209c76D646f"
+const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
 const network = 'https://rpc.ftm.tools'
 
-const defy = '0x471D83bdb3Fbc1b67dbB9F6758fEEaB56A20268F'
+const defy = '0x6ECED8E16eDA61E65292f019B165542A5906ecD6'
 let defyContract = undefined
 
-const ilp = '0x9a0Ee82De70A91b646672E9AC0e095FBEe913302'
+const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
 
 const wbnb = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83'
@@ -375,22 +375,22 @@ let wbnbContract = undefined
 const busd = '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75'
 let busdContract = undefined
 
-const farmAddress = "0xc424aAF4BA33117DA61867bd9a658f181Ef7d592"
+const farmAddress = "0x690af18466607997c247B539381ed87c1cC78a0C"
 let farmContract = undefined
 
 
 var pools = []
 //ApeSwap Pools	
-pools.push( { name: 'KINS', addr: "0x471D83bdb3Fbc1b67dbB9F6758fEEaB56A20268F", ilp: false,
+pools.push( { name: 'KINS', addr: "0x6ECED8E16eDA61E65292f019B165542A5906ecD6", ilp: false,
 	token0: defy, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 		
 
-pools.push( { name: 'APE-DEFY-BNB', addr: "0xEa24DD2824F10518dEd7cBBAF31f8c3D159E160D", ilp: true,
+pools.push( { name: 'APE-DEFY-BNB', addr: "0xD24cf15F02D1cC4C868C303925aDF247118CAd9B", ilp: true,
 	token0: wbnb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0,
 		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 		
-pools.push( { name: 'APE-DEFY-BUSD', addr: "0x73d4Fda26cE1876E18c5b0088E297209c76D646f", ilp: true,
+pools.push( { name: 'APE-DEFY-BUSD', addr: "0x27A2c9CF757424142d262fc6A736C69aF62F1159", ilp: true,
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e6, lpTokenValueTotal: 0, 
 		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 		
@@ -409,7 +409,7 @@ $(document).ready(function() {
 		ethereum.request({ method: 'eth_accounts' }).then(function (result) {
 			user.address = result[0]
 			console.log("User wallet: " + user.address)
-			$('.user-address')[0].innerHTML = 'Your Address: ' + user.address
+			$('.user-address')[0].innerHTML = '' + user.address
 			$('.user-address')[0].style.display = ''
 			$('.connect-button')[0].innerHTML = 'Connected!'
 			web3 = new Web3(window.web3.currentProvider)
@@ -443,7 +443,7 @@ async function userLoginAttempt(){
 	await ethereum.request({method: 'eth_requestAccounts'})
 	ethereum.request({ method: 'eth_accounts' }).then(function (result) {
 		user.address = result[0]
-		$('.user-address')[0].innerHTML = 'Your Address: ' + user.address
+		$('.user-address')[0].innerHTML = '' + user.address
 		$('.user-address')[0].style.display = ''
 		$('.connect-button')[0].innerHTML = 'Connected!'
 		web3 = new Web3(window.web3.currentProvider)
@@ -597,7 +597,7 @@ async function pendingDefy(pid){
 	let pendingDefy = (parseInt(await farmContract.methods.pendingkins(pid, user.address).call()) / 1e18)
 /*	user.harvestable += pendingDefy
 	$('.harvestable')[0].innerHTML = user.harvestable.toFixed(6) */
-	$('.pending-kins-'+pid)[0].innerHTML = " " +pendingDefy.toFixed(2)
+	$('.pending-kins-'+pid)[0].innerHTML = " " +pendingDefy.toFixed(6)
 }
 
 async function poolBalance(pid){
