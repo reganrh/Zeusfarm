@@ -460,16 +460,16 @@ async function tvlAuto() {
 	}
 }
 async function refreshStats(){
-	await getSupply()
+//	await getSupply()
 	await getPrices()
-	for(i = 0; i < pools.length; i++){
-		await getLiqTotals(i)
-	}
+//	for(i = 0; i < pools.length; i++){
+//		await getLiqTotals(i)
+//	}
 }	
 let totalSupply = 0
 async function getSupply(){
-	let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
-	$('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
+//	let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
+//	$('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
 
 
 }
@@ -490,7 +490,7 @@ async function getPrices(){
 	if(currentKinsUSDC > currentKinsFTM)
 		currentPrice = currentKinsUSDC 
 	$('.current-price')[0].innerHTML = '$ '+currentPrice.toFixed(2)
-    
+    $('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
 
     $('.marketcap')[0].innerHTML = '$ '+ (totalSupply*currentPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })
     
@@ -518,7 +518,7 @@ async function getApeDefyBnbLiq(pid){
 	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
 	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
 			
-	pools[pid].lpTokenValueTotal = (currentKinsUSDC * token0Pool) + (token1Pool * currentBnbPriceToUsd)
+	pools[pid].lpTokenValueTotal = (currentKinsUSDC * token0Pool) + (token1Pool * currentFTMPriceToUsd)
 
 //	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
