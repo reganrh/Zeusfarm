@@ -430,9 +430,9 @@ async function tvlAuto() {
 		
 		await getPrices()
 		
-		for(let i = 0; i < pools.length; i++){
-			await getLiqTotals(i)
-		}
+		//for(let i = 0; i < pools.length; i++){
+	//		await getLiqTotals(i)
+	//	}
 		clearInterval(totalInt)
 	/*	setTimeout(() => { 
 			totalInt = setInterval(() => {
@@ -447,7 +447,7 @@ async function tvlAuto() {
 			}, 250)
 		}, 1000) */
 				
-		getSupply()
+	//	getSupply()
 		setInterval(() => {
 			refreshStats()
 		}, 1000 * 60)
