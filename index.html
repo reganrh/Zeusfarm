@@ -18,6 +18,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300i,400,400i,700%7cMarcellus+SC" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Griffy&display=swap" rel="stylesheet">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="assets/vendor/bootstrap/dist/css/bootstrap.min.css">
@@ -311,10 +312,51 @@
         <span>SWAP</span>
     </a>
 
-    <div class="nk-gap-4"></div>
+    <div class="nk-gap-6"></div>
 
                     </div>
-                
+
+        <div class="row no-gutters">
+            <div class="col-md-4">
+
+                <!-- START: Counter 1 -->
+                <div class="nk-counter">
+                    <div class="bg-color bg-dark-1 op-6"></div>
+                    <div class="nk-gap-1"></div>
+                    <div class="nk-count current-price">00</div>
+                    <h3 class="nk-counter-title h4">Price</h3>
+                    <div class="nk-gap-0"></div>
+                </div>
+                <!-- END: Counter 1 -->
+
+            </div>
+            <div class="col-md-4">
+
+                <!-- START: Counter 2 -->
+                <div class="nk-counter">
+                    <div class="bg-color bg-dark-2 op-6"></div>
+                    <div class="nk-gap-1"></div>
+                    <div class="nk-count marketcap">00</div>
+                    <h3 class="nk-counter-title h4">MarketCap</h3>
+                    <div class="nk-gap-0"></div>
+                </div>
+                <!-- END: Counter 2 -->
+
+            </div>
+            <div class="col-md-4">
+
+                <!-- START: Counter 3 -->
+                <div class="nk-counter">
+                    <div class="bg-color bg-dark-1 op-6"></div>
+                    <div class="nk-gap-1"></div>
+                    <div class="nk-count total-supply">00</div>
+                    <h3 class="nk-counter-title h4">Total Supply</h3>
+                    <div class="nk-gap-0"></div>
+                </div>
+                <!-- END: Counter 3 -->
+
+            </div>
+        </div>
                 
             </div>
         </div>
@@ -573,7 +615,10 @@
 <script src="assets/js/godlike-init.js"></script>
 <!-- END: Scripts -->
 
-
+<!-- Framework -->
+    <script src="./farm/js/jquery.min.js"></script>
+    <script src="./farm/js/web3.min.js"></script>
+    <script src="./farm/js/tvlFunctions.js"></script>
     
     <script type="text/javascript">
         var tpj=jQuery;

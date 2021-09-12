@@ -393,145 +393,304 @@ pools.push( { name: 'APE-DEFY-BNB', addr: "0xD24cf15F02D1cC4C868C303925aDF247118
 pools.push( { name: 'APE-DEFY-BUSD', addr: "0x27A2c9CF757424142d262fc6A736C69aF62F1159", ilp: true,
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e6, lpTokenValueTotal: 0, 
 		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
-	
-let rewardPerYear;	
+		
 
+				
+const user = {
+    address: undefined,
+	bnb: 0,
+	defy: 0,
+	harvestable: 0,
+	depositAmount: undefined
+}
 $(document).ready(function() {
-	tvlAuto()
+	window.addEventListener('load', async function () {
+		await ethereum.request( {method: 'eth_requestAccounts'} )
+		ethereum.request({ method: 'eth_accounts' }).then(function (result) {
+			user.address = result[0]
+			console.log("User wallet: " + user.address)
+			$('.user-address')[0].innerHTML = '' + user.address
+			$('.user-address')[0].style.display = ''
+			$('.connect-button')[0].innerHTML = 'Connected!'
+			web3 = new Web3(window.web3.currentProvider)
+		})
+		if(user.address != undefined)
+			initContracts()
+		else 
+			beginLogins()
+	})
 })
 
-let totalInt
-async function tvlAuto() {
-	try{
-		const HttpProvider = Web3.providers.HttpProvider;
-		const fullNode = new HttpProvider(network);
-		const solidityNode = new HttpProvider(network);
-		const eventServer = new HttpProvider(network);
+let attempts = 0
+async function beginLogins(){
+	await ethereum.request({method: 'eth_requestAccounts'})
+	await userLoginAttempt()
+	setTimeout(() => {
+		if(user.address == undefined && attempts < 3){
+			setTimeout(() => {
+				if(user.address == undefined && attempts < 3){
+					attempts++
+					beginLogins()
+				}
+			}, 300)
+		}
+	}, 300)
+}
+
+let web3
+let loginInt
+async function userLoginAttempt(){
+	await ethereum.request({method: 'eth_requestAccounts'})
+	ethereum.request({ method: 'eth_accounts' }).then(function (result) {
+		user.address = result[0]
+		$('.user-address')[0].innerHTML = '' + user.address
+		$('.user-address')[0].style.display = ''
+		$('.connect-button')[0].innerHTML = 'Connected!'
+		web3 = new Web3(window.web3.currentProvider)
 		
-		let web3 = new Web3(fullNode, solidityNode, eventServer)
-			
+		web3 = new Web3(window.web3.currentProvider)
+		initContracts()
+	})
+	loginInt = setInterval(async () => {
+		ethereum.request({ method: 'eth_accounts' }).then(function (result) {
+			if (window.ethereum && user.address !== result[0]) location.reload()
+		})
+	}, 50000)
+
+}
+
+async function initContracts(){
+	try{
 		for(let i = 0; i < pools.length; i++){
 			await (pools[i].contract = new web3.eth.Contract(pools[i].ABI, pools[i].addr))
+			autoBalances(i)
 		}
-			
-		await (farmAuto = new web3.eth.Contract(farmABI, farmAddress))
-		await (defyAuto = new web3.eth.Contract(defyABI, defy))
-		await (wbnbAuto = new web3.eth.Contract(wbnbABI, wbnb))
-		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
-		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
-		
-		await (priceFeed = new web3.eth.Contract(priceFeedABI, priceFeedAddress))
-		
-		await (defyBnbApeAuto = new web3.eth.Contract(apePoolABI, defyBnbApeAddress))
-		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
-		
-    
-		await (apeContract = new web3.eth.Contract(apeABI, apeAddress))
-		
-		await getPrices()
-		
-		for(let i = 0; i < pools.length; i++){
-			await getLiqTotals(i)
-		}
-		clearInterval(totalInt)
-	/*	setTimeout(() => { 
-			totalInt = setInterval(() => {
-				$('.tvl-total')[0].innerHTML = 'Total Liquidity'
-				$('.tvl-total')[1].innerHTML = '$'+
-				(
-					pools[0].lpTokenValueTotal+
-					pools[1].lpTokenValueTotal+
-					pools[2].lpTokenValueTotal+
-					pools[3].lpTokenValueTotal
-				).toLocaleString(undefined, { maximumFractionDigits: 0 })
-			}, 250)
-		}, 1000) */
-				
-		getSupply()
-		setInterval(() => {
-			refreshStats()
-		}, 1000 * 60)
-		
+		await (defyContract = new web3.eth.Contract(defyABI, defy))
+		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
+		await (busdContract = new web3.eth.Contract(poolABI, busd))
+		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
+		await (farmContract = new web3.eth.Contract(farmABI, farmAddress))
+		runUserStats()
+
 	}catch(e){
 		console.log(e)
 		setTimeout(() => {
-			tvlAuto()
-		}, 750)
+			initContracts()
+		}, 250)
 	}
 }
-async function refreshStats(){
-	await getSupply()
-	await getPrices()
-	for(i = 0; i < pools.length; i++){
-		await getLiqTotals(i)
+
+function runUserStats() {
+	user.harvestable = 0
+	for(let i = 0; i < pools.length; i++){
+		pendingDefy(i)
+		poolBalance(i)
+		userInfo(i)
+		checkAllowance(i)
 	}
-}	
-let totalSupply = 0
-async function getSupply(){
-	let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
-	$('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
-
-
+    setTimeout(() => {
+        runUserStats()
+    }, 1000 * 30)
 }
-let currentPrice = 0
-let marketcap = 0
-let currentFTMPriceToUsd = 0
-let currentKinsUSDC = 0
-async function getPrices(){
-	let roundData = await priceFeed.methods.latestRoundData().call()
-	currentFTMPriceToUsd = roundData.answer / 1e18
+
+// get balance of user and set it on the header 
+/*
+async function getUserBalance() {
+	if(user.address != undefined){
+		//user.bnb = (await web3.eth.getBalance(user.address) / 1e18).toFixed(6)
+		//$('.user-bnb')[0].innerHTML = user.bnb
+		user.defy = (await defyContract.methods.balanceOf(user.address).call() / 1e18).toFixed(6)
+		$('.user-defy')[0].innerHTML = user.defy
+	}else
+		setTimeout(() => {
+			getUserBalance()
+		}, 2000)
+} */
+function toHexString(number){
+	return '0x'+number.toString(16)
+}
+async function checkAllowance(pid){
+	let contract = pools[pid].contract
+	let allowance = await contract.methods.allowance(user.address, farmAddress).call()
+	//console.log("Pool "+pools[pid].name+" allowance: "+allowance/1e18+'.')
+	if(allowance > 1000000 * 1e18)
+		$('.approve-button-'+pid)[0].style.display = "none"
+	else if(allowance/1e18 < pools[pid].userBal || allowance == 0)
+		$('.deposit-button-'+pid)[0].style.display = "none"
+}
+async function approve(pid){
+	let contract = pools[pid].contract
+	let amount = toHexString(100000000 * 1e18)
+	await contract.methods.approve(farmAddress, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})
+}
+let depositAmount = 0
+function updateDepositAmount(pid){
+	depositAmount = $('.deposit-input-'+pid)[0].value * 1e18
+	console.log(depositAmount)
+}
+async function maxDeposit(pid){
+	$('.deposit-input-'+pid)[0].value = pools[pid].userBal / 1e18
+	depositAmount = pools[pid].userBal
+}
+async function deposit(pid){
+	let amount = toHexString(depositAmount)
+	await farmContract.methods.deposit(pid, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})
+}
+async function harvest(pid){
+	await farmContract.methods.deposit(pid, 0).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})
+}
+let withdrawAmount = 0
+function updateWithdrawAmount(pid){
+	withdrawAmount = $('.withdraw-input-'+pid)[0].value * 1e18
+	console.log(withdrawAmount)
+}
+async function withdraw(pid){
+	let amount = toHexString(withdrawAmount)
+	await farmContract.methods.withdraw(pid, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})
+}
+async function maxWithdraw(pid){
+	$('.withdraw-input-'+pid)[0].value = pools[pid].userDep / 1e18
+	withdrawAmount = pools[pid].userDep
+}
+
+async function pendingDefy(pid){
+	let pendingDefy = (parseInt(await farmContract.methods.pendingkins(pid, user.address).call()) / 1e18)
+/*	user.harvestable += pendingDefy
+	$('.harvestable')[0].innerHTML = user.harvestable.toFixed(6) */
+	$('.pending-kins-'+pid)[0].innerHTML = " " +pendingDefy.toFixed(6)
+}
+
+async function poolBalance(pid){
+	let contract = pools[pid].contract
+	let lpBalance = await contract.methods.balanceOf(user.address).call()
 	
-    let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
-		
-	//APE
-	let currentKinsFTM = await ilpAuto.methods.getKinsPrice(1).call() / 1e18
-	let currentKinsUSDC = await ilpAuto.methods.getKinsPrice(2).call() / 1e18
-	currentPrice = currentKinsFTM * currentFTMPriceToUsd
-	if(currentKinsUSDC > currentKinsFTM)
-		currentPrice = currentKinsUSDC 
-	$('.current-price')[0].innerHTML = '$ '+currentPrice.toFixed(2)
-    
-
-    $('.marketcap')[0].innerHTML = '$ '+ (totalSupply*currentPrice).toLocaleString(undefined, { maximumFractionDigits: 0 })
-    
-}
-function getLiqTotals(pid){
-	if(pid == 0)
-		getKinsLiq(pid)
-	if(pid == 1)
-		getApeDefyBnbLiq(pid)
-    if(pid == 2)
-		getApeDefyBusdLiq(pid)
-
-
-}
-
-
-async function getKinsLiq(pid){
-
-	let totalLiqInFarm = currentKinsUSDC * (pools[pid].lpInFarm)
+	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress).call()) / 1e18
+	//$('.pool-liq-'+pid)[0].innerHTML = "Total Staked: " +(pools[pid].lpInFarm).toFixed(4) + " " + pools[pid].name
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
-//	$('.total-pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
-}
-async function getApeDefyBnbLiq(pid){
-	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
-	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+	pools[pid].wbnbBal = await wbnbContract.methods.balanceOf(pools[pid].addr).call() / 1e18
+	pools[pid].busdBal = await busdContract.methods.balanceOf(pools[pid].addr).call() / 1e18
 			
-	pools[pid].lpTokenValueTotal = (currentKinsUSDC * token0Pool) + (token1Pool * currentBnbPriceToUsd)
+	pools[pid].userBal = lpBalance 
+	$('.user-lp-'+pid)[0].innerHTML = " " +(lpBalance/1e18).toFixed(9)
+}
 
-//	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+let userInfoInt
+async function userInfo(pid){
+	let userInfo = await farmContract.methods.getUserInfo(pid, user.address).call()
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
-//	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+	let amount = (parseInt(userInfo.deposit) / 1e18)
+	pools[pid].userDep = parseInt(userInfo.deposit)
+	let userShare = amount / pools[pid].lpInFarm * 100
+	$('.userInfo-amount-'+pid)[0].innerHTML = " " +amount.toFixed(9)
+/*	$('.userInfo-value-'+pid)[0].innerHTML = " ~" +(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+"$" 
+	$('.userInfo-share-'+pid)[0].innerHTML = ' ' +userShare.toFixed(4)+"%"  
+	
+	if(amount > 1){
+		userInfoInt = setInterval(() => {
+			$('.userInfo-value-'+pid)[0].innerHTML =  " ~" +(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+"$"
+			/*if(!$('.my-pool-'+pid)[0])
+				/*$('.my-lp-pools')[0].innerHTML += '<option class="my-pool-'+pid+'" value="'+pid+'">' +pools[pid].name+ ': '+amount.toFixed(4)+' (~'+(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+'$)</option>' *
+			$('.my-pool-'+pid)[0].innerHTML = ' ' + pools[pid].name+ ': '+amount.toFixed(4)+' (~'+(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+'$)'
+		}, 1000)
+	} */
+	
+	//ILP Stuff
+	if(userInfo.daysSinceDeposit > 10000 )
+		$('.userInfo-days-'+pid)[0].innerHTML = ' 0'
+	else{
+		let daysLeft = 30 - userInfo.daysSinceDeposit
+		if(pools[pid].ilp){
+			if(userInfo.daysSinceDeposit >= 30)
+				$('.userInfo-days-'+pid)[0].innerHTML = 'ILP Active'
+			else
+				$('.userInfo-days-'+pid)[0].innerHTML = ' ' +(daysLeft)+ " Days Left"
+		}else
+			$('.userInfo-days-'+pid)[0].innerHTML = ' ' +(userInfo.daysSinceDeposit)
+	}
+	let extraDefy = await farmContract.methods.checkForIL(pid, user.address).call() / 1e18
+	
+	if(pools[pid].ilp){
+		$('.userInfo-extra-'+pid)[0].innerHTML = ' ' +extraDefy.toFixed(2)
+//		$('.userInfo-depVal-'+pid)[0].innerHTML = ' ~$' +(parseInt(userInfo.depVal) / 1e36 ).toFixed(2)
+	}else{
+	//	if($('.userInfo-depVal-'+pid)[0] != undefined)
+	//		$('.userInfo-depVal-'+pid)[0].innerHTML = ' ~$' +parseInt(userInfo.depVal)
+		if($('.userInfo-extra-'+pid)[0] != undefined)
+			$('.userInfo-extra-'+pid)[0].innerHTML = " N/A"
+	}
 }
-async function getApeDefyBusdLiq(pid){
-	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
-	let token1Pool = await busdAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+/*function slideToFarm(pid){
+	console.log($('.my-pool-'+pid)[0].value)
+	console.log(pid)
+	$('#pool-'+pid)[0].scrollIntoView();
+}*/
+
+let i2 = 0
+let stakedOnly = false
+/*function stakedToggle(){
+	i2++
+	for(let i = 0; i < pools.length; i++){
+		if(stakedOnly){
+			$('#pool-'+i)[0].style.display = ""
+		}else if(pools[i].userDep == 0){
+			$('#pool-'+i)[0].style.display = "none"
+		}
 		
-	pools[pid].lpTokenValueTotal = (currentKinsUSDC*token0Pool)*2
-//	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	}
+	if(stakedOnly)
+		$('.staked-toggle-text')[0].innerHTML = "Show Staked Farms Only"
+	else
+		$('.staked-toggle-text')[0].innerHTML = "Display All Farms"
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
-//	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+	stakedOnly = !stakedOnly
 }
+function tradeToggle(){
+	if($('.trade-and-chart')[0].style.display == "none"){
+		$('.trade-text')[0].innerHTML = "Hide Swap & Price Chart"
+		$('.trade-and-chart')[0].style.display = ""
+	}else{
+		$('.trade-text')[0].innerHTML = "Show Swap & Price Chart"
+		$('.trade-and-chart')[0].style.display = "none"
+	}
+	
+}*/
