@@ -18,6 +18,21 @@
     line-height: 1;
     color: #ff0000;
 }
+
+.nk-counter .nk-count {
+
+    margin-bottom: 10px;
+    font-size: 3rem;
+    line-height: 1;
+    color: #ff0000;
+    font-family: griffy;
+}
+
+.nk-counter .nk-counter-title {
+    font-family: creepster;
+    font-weight: 100;
+}
+
 .nk-gap-0 {
     height: 10px;
 }
