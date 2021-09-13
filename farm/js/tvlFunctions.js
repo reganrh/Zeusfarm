@@ -479,7 +479,7 @@ let currentFTMPriceToUsd = 0
 let currentKinsUSDC = 0
 async function getPrices(){
 	let roundData = await priceFeed.methods.latestRoundData().call()
-	currentFTMPriceToUsd = roundData.answer / 1e18
+	currentFTMPriceToUsd = roundData.answer / 1e8
 	
     let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
 		
@@ -487,8 +487,8 @@ async function getPrices(){
 	let currentKinsFTM = await ilpAuto.methods.getKinsPrice(1).call() / 1e18
 	let currentKinsUSDC = await ilpAuto.methods.getKinsPrice(2).call() / 1e18
 	currentPrice = currentKinsFTM * currentFTMPriceToUsd
-	if(currentKinsUSDC > currentKinsFTM)
-		currentPrice = currentKinsUSDC 
+	if(currentKinsUSDC > currentPrice){
+		currentPrice = currentKinsUSDC }
 	$('.current-price')[0].innerHTML = '$ '+currentPrice.toFixed(2)
     $('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
 
