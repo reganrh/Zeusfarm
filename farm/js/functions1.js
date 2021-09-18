@@ -346,6 +346,7 @@ let priceFeed = undefined
 
 let farmAuto = undefined
 let defyAuto = undefined
+let morphAuto = undefined
 let wbnbAuto = undefined
 let busdAuto = undefined
 let ilpAuto = undefined
@@ -358,6 +359,12 @@ let apeContract = undefined
 const defyBnbApeAddress = "0xD24cf15F02D1cC4C868C303925aDF247118CAd9B"
 let defyBnbApeAuto = undefined
 
+const morphFtmApeAddress = "0x7D42442f764985F208E6fa6A7CD0e253CB447D58"
+let morphFtmApeAuto = undefined
+
+const kinsMorphApeAddress = "0x865740c62ec992893a835AbA138cD3cec9b126E0"
+let kinsMorphApeAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -365,6 +372,9 @@ const network = 'https://rpc.ftm.tools'
 
 const defy = '0x6ECED8E16eDA61E65292f019B165542A5906ecD6'
 let defyContract = undefined
+
+const morph = '0x0789ff5ba37f72abc4d561d00648acadc897b32d'
+let morphContract = undefined
 
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
@@ -394,7 +404,9 @@ pools.push( { name: 'APE-DEFY-BUSD', addr: "0x27A2c9CF757424142d262fc6A736C69aF6
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e6, lpTokenValueTotal: 0, 
 		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 		
-
+pools.push( { name: 'APE-DEFY-MORPH', addr: "0x865740c62ec992893a835AbA138cD3cec9b126E0", ilp: true,
+	token0: morph, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 3, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 				
 const user = {
     address: undefined,
@@ -466,6 +478,7 @@ async function initContracts(){
 			autoBalances(i)
 		}
 		await (defyContract = new web3.eth.Contract(defyABI, defy))
+		await (morphContract = new web3.eth.Contract(defyABI, morph))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))

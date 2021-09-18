@@ -21,6 +21,7 @@ async function autoContract() {
 			
 		await (farmAuto = new web3.eth.Contract(farmABI, farmAddress))
 		await (defyAuto = new web3.eth.Contract(defyABI, defy))
+		await (morphAuto = new web3.eth.Contract(defyABI, morph))
 		await (wbnbAuto = new web3.eth.Contract(wbnbABI, wbnb))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
@@ -29,6 +30,8 @@ async function autoContract() {
 		await (priceFeed = new web3.eth.Contract(priceFeedABI, priceFeedAddress))
 		
 		await (defyBnbApeAuto = new web3.eth.Contract(apePoolABI, defyBnbApeAddress))
+		await (morphFtmApeAuto = new web3.eth.Contract(apePoolABI, morphFtmApeAddress))
+		await (kinsMorphApeAuto = new web3.eth.Contract(apePoolABI, kinsMorphApeAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -85,9 +88,12 @@ let currentApeBnbToDefy
 let currentApeDefyToBnb
 
 let currentApeBusdToDefy = 0
+let currentFtmToMorph = 0
+
 async function getApePrices(){
 	let resDefyBnb = await defyBnbApeAuto.methods.getReserves().call()	
 	let resDefyBusd = await defyBusdApeAuto.methods.getReserves().call()
+	let resMorphFtm = await morphFtmApeAuto.methods.getReserves().call()	
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
 	
@@ -98,6 +104,8 @@ async function getApePrices(){
 	
 	currentApeBusdToDefy = await ilpAuto.methods.getKinsPrice(2).call() / 1e18
 	
+    currentFtmToMorph = await apeContract.methods.quote(toHexString(1e18), resMorphFtm._reserve0, resMorphFtm._reserve1).call() / 1e18
+    
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
 	
@@ -121,15 +129,19 @@ async function autoBalances(pid){
     }
         
 	if(pid == 0){
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 10/1 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1000/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
 	}
 	if(pid == 1){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 10/2 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1000/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 10/2 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1000/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    if(pid == 3){
+		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1000/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
 }
 function getLiqTotals(pid){
@@ -139,6 +151,8 @@ function getLiqTotals(pid){
 		getApeDefyBnbLiq(pid)
     if(pid == 2)
 		getApeDefyBusdLiq(pid)
+    if(pid == 3)
+		getApeKinsMorphLiq(pid)
 
 
 }
@@ -167,6 +181,17 @@ async function getApeDefyBusdLiq(pid){
 	let token1Pool = await busdAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
 		
 	pools[pid].lpTokenValueTotal = (currentApeBusdToDefy*token0Pool)*2
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+async function getApeKinsMorphLiq(pid){
+	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await morphAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToMorph * token1Pool) + (token0Pool * currentApeBusdToDefy)
+
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
 //	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
