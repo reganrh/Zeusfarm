@@ -17,6 +17,7 @@
     font-size: 2rem;
     line-height: 1;
     color: #ff0000;
+    font-family: griffy;
 }
 
 .nk-counter .nk-count {
@@ -29,6 +30,10 @@
 }
 
 .nk-counter .nk-counter-title {
+    font-family: creepster;
+    font-weight: 100;
+}
+.nk-counter-2  .nk-counter-title {
     font-family: creepster;
     font-weight: 100;
 }

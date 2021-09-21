@@ -450,7 +450,7 @@ async function tvlAuto() {
 	//	getSupply()
 		setInterval(() => {
 			refreshStats()
-		}, 1000 * 60)
+		}, 1000 * 5)
 		
 	}catch(e){
 		console.log(e)

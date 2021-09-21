@@ -503,7 +503,7 @@ function runUserStats() {
 	}
     setTimeout(() => {
         runUserStats()
-    }, 1000 * 30)
+    }, 1000 * 5)
 }
 
 // get balance of user and set it on the header 
@@ -527,9 +527,11 @@ async function checkAllowance(pid){
 	let allowance = await contract.methods.allowance(user.address, farmAddress).call()
 	//console.log("Pool "+pools[pid].name+" allowance: "+allowance/1e18+'.')
 	if(allowance > 1000000 * 1e18)
-		$('.approve-button-'+pid)[0].style.display = "none"
-	else if(allowance/1e18 < pools[pid].userBal || allowance == 0)
-		$('.deposit-button-'+pid)[0].style.display = "none"
+		$('.approve-button-'+pid)[0].style.display = "none" ,
+		$('.deposit-button-'+pid)[0].style.display = ""
+	 if(allowance <= 1000000 * 1e18)
+		$('.deposit-button-'+pid)[0].style.display = "none" ,
+		$('.approve-button-'+pid)[0].style.display = "" 
 }
 async function approve(pid){
 	let contract = pools[pid].contract
@@ -635,18 +637,21 @@ async function userInfo(pid){
 	pools[pid].userDep = parseInt(userInfo.deposit)
 	let userShare = amount / pools[pid].lpInFarm * 100
 	$('.userInfo-amount-'+pid)[0].innerHTML = " " +amount.toFixed(9)
-/*	$('.userInfo-value-'+pid)[0].innerHTML = " ~" +(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+"$" 
-	$('.userInfo-share-'+pid)[0].innerHTML = ' ' +userShare.toFixed(4)+"%"  
+	if(pid > 0){
+	$('.userInfo-value-'+pid)[0].innerHTML = " " +(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+"$" 
+	}
+	//$('.userInfo-share-'+pid)[0].innerHTML = ' ' +userShare.toFixed(4)+"%"  
 	
-	if(amount > 1){
-		userInfoInt = setInterval(() => {
-			$('.userInfo-value-'+pid)[0].innerHTML =  " ~" +(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+"$"
+	if(pid == 0){
+
+			$('.userInfo-value-'+pid)[0].innerHTML =  " " +(amount * currentApeBusdToDefy).toFixed(2)+"$"
 			/*if(!$('.my-pool-'+pid)[0])
 				/*$('.my-lp-pools')[0].innerHTML += '<option class="my-pool-'+pid+'" value="'+pid+'">' +pools[pid].name+ ': '+amount.toFixed(4)+' (~'+(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+'$)</option>' *
 			$('.my-pool-'+pid)[0].innerHTML = ' ' + pools[pid].name+ ': '+amount.toFixed(4)+' (~'+(amount * (pools[pid].lpTokenValueTotal*1e18) / (pools[pid].totalSupply*1e18)).toFixed(2)+'$)'
-		}, 1000)
-	} */
+		*/
+	} 
 	
+	if(pid >0){
 	//ILP Stuff
 	if(userInfo.daysSinceDeposit > 10000 )
 		$('.userInfo-days-'+pid)[0].innerHTML = ' 0'
@@ -671,6 +676,7 @@ async function userInfo(pid){
 		if($('.userInfo-extra-'+pid)[0] != undefined)
 			$('.userInfo-extra-'+pid)[0].innerHTML = " N/A"
 	}
+}
 }
 /*function slideToFarm(pid){
 	console.log($('.my-pool-'+pid)[0].value)

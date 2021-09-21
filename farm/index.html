@@ -18,6 +18,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300i,400,400i,700%7cMarcellus+SC" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Griffy&display=swap" rel="stylesheet">
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="../assets/vendor/bootstrap/dist/css/bootstrap.min.css">
@@ -282,64 +283,68 @@
         <div class="nk-header-table-cell">
             
             
-<!--
+
     <div class="container">
         <div class="row vertical-gap ">
             <div class="col-md-3 col-sm-6 ">
 
-                <!-- START: Counter 4 --
-                <div class="nk-counter-2 bg-color bg-dark-1 op-6">
+                <!-- START: Counter Price -->
+                <div class="nk-counter-2">
+                    <div class="bg-color bg-dark-1 op-6"></div>
                     <div class="nk-gap"></div>
-                    <div class="nk-count kins-price">00</div>
+                    <div class="nk-count kins-price"></div>
                     <h3 class="nk-counter-title h4">Price</h3>
                     <div class="nk-gap"></div>
                     
                 </div>
-                <!-- END: Counter 4 --
+                <!-- END: Counter Price -->
 
             </div>
             <div class="col-md-3 col-sm-6">
 
-                <!-- START: Counter 5 --
-                <div class="nk-counter-2 bg-color bg-dark-1 op-6">
+                <!-- START: Counter Supply -->
+                <div class="nk-counter-2">
+                    <div class="bg-color bg-dark-1 op-6"></div>
                     <div class="nk-gap"></div>
-                    <div class="nk-count total-supply">00</div>
+                    <div class="nk-count total-supply"></div>
                     <h3 class="nk-counter-title h4">Total Supply</h3>
                     <div class="nk-gap"></div>
                     
                 </div>
-                <!-- END: Counter 5 --
+                <!-- END: Counter Supply -->
 
             </div>
             <div class="col-md-3 col-sm-6">
 
-                <!-- START: Counter 6 --
-                <div class="nk-counter-2 bg-color bg-dark-1 op-6">
+                <!-- START: Counter Burn -->
+                <div class="nk-counter-2">
+                    <div class="bg-color bg-dark-1 op-6"></div>
                     <div class="nk-gap"></div>
-                    <div class="nk-count total-burned">00</div>
+                    <div class="nk-count total-burned"></div>
                     <h3 class="nk-counter-title h4">Total Burn</h3>
                     <div class="nk-gap"></div>
                     
                 </div>
-                <!-- END: Counter 6 --
+                <!-- END: Counter Burn -->
 
             </div>
             <div class="col-md-3 col-sm-6">
 
-                <!-- START: Counter 7 --
-                <div class="nk-counter-2 bg-color bg-dark-1 op-6">
+                <!-- START: Counter TVL -->
+                <div class="nk-counter-2">
+                    <div class="bg-color bg-dark-1 op-6"></div>
                     <div class="nk-gap"></div>
-                    <div class="nk-count">Loading..</div>
+                    <div class="nk-count tvl-total"></div>
                     <h3 class="nk-counter-title h4">TVL</h3>
                     <div class="nk-gap"></div>
                     
                 </div>
-                <!-- END: Counter 7 --
+                <!-- END: Counter TVL -->
 
             </div>
         </div>
         <div class="nk-gap"></div>
-    </div>         -->   
+    </div>          
             
         <div class="container">
             
@@ -390,8 +395,10 @@
                     
                     <button class="nk-btn nk-btn-lg link-effect-3 nk-btn-color-warning" onclick="harvest(0)">HARVEST</button>
                     <div class="nk-gap-4"></div> 
-                    
-                           
+                    <div class="nk-pricing-price">
+                        <span class="nk-pricing-currency">STAKED VALUE</span> :
+                        <span class="nk-pricing-period userInfo-value-0">Loading...</span>
+                    </div> 
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">KINS STAKED</span> :
                         <span class="nk-pricing-period userInfo-amount-0">Loading...</span>
@@ -424,6 +431,10 @@
                                                     <tr>
                                                         <td class="">Total Liquidity</td>
                                                         <td class="total-pool-liq-1">Loading...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">TVL</td>
+                                                        <td class="pool-liq-1">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="">APR</td>
@@ -463,7 +474,11 @@
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">ILP KINS</span> :
                         <span class="nk-pricing-period userInfo-extra-1">Loading...</span>
-                    </div>       
+                    </div>
+                    <div class="nk-pricing-price">
+                        <span class="nk-pricing-currency">STAKED VALUE</span> :
+                        <span class="nk-pricing-period userInfo-value-1">Loading...</span>
+                    </div> 
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">KINS-FTM LP STAKED</span> :
                         <span class="nk-pricing-period userInfo-amount-1">Loading...</span>
@@ -497,6 +512,10 @@
                                                     <tr>
                                                         <td class="">Total Liquidity</td>
                                                         <td class="total-pool-liq-2">Loading...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">TVL</td>
+                                                        <td class="pool-liq-2">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="">APR</td>
@@ -536,7 +555,11 @@
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">ILP KINS</span> :
                         <span class="nk-pricing-period userInfo-extra-2">Loading...</span>
-                    </div>       
+                    </div>
+                    <div class="nk-pricing-price">
+                        <span class="nk-pricing-currency">STAKED VALUE</span> :
+                        <span class="nk-pricing-period userInfo-value-2">Loading...</span>
+                    </div> 
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">KINS-USDC LP STAKED</span> :
                         <span class="nk-pricing-period userInfo-amount-2">Loading...</span>
@@ -568,6 +591,10 @@
                                                     <tr>
                                                         <td class="">Total Liquidity</td>
                                                         <td class="total-pool-liq-3">Loading...</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="">TVL</td>
+                                                        <td class="pool-liq-3">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="">APR</td>
@@ -607,7 +634,11 @@
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">ILP KINS</span> :
                         <span class="nk-pricing-period userInfo-extra-3">Loading...</span>
-                    </div>       
+                    </div>
+                    <div class="nk-pricing-price">
+                        <span class="nk-pricing-currency">STAKED VALUE</span> :
+                        <span class="nk-pricing-period userInfo-value-3">Loading...</span>
+                    </div> 
                     <div class="nk-pricing-price">
                         <span class="nk-pricing-currency">KINS-MORPH LP STAKED</span> :
                         <span class="nk-pricing-period userInfo-amount-3">Loading...</span>

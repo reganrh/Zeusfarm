@@ -43,11 +43,25 @@ async function autoContract() {
 			await autoBalances(i)
 			getLiqTotals(i)
 		}
-		
-		getSupply()
+	let totalInt	
+        clearInterval(totalInt)
+		setTimeout(() => { 
+			totalInt = setInterval(() => {
+				
+				$('.tvl-total')[0].innerHTML = '$'+
+				(
+					pools[0].lpTokenValueTotal+
+					pools[1].lpTokenValueTotal+
+					pools[2].lpTokenValueTotal+
+					pools[3].lpTokenValueTotal
+				).toLocaleString(undefined, { maximumFractionDigits: 0 })
+			}, 250)
+		}, 1000)
+    
+	//	getSupply()
 		setInterval(() => {
 			refreshStats()
-		}, 1000 * 10)
+		}, 1000 * 8)
 	/*
 	}catch(e){
 		console.log(e)
@@ -58,24 +72,30 @@ async function autoContract() {
 	*/
 }
 function refreshStats(){
-	getSupply()
+//	getSupply()
 	getApePrices()
 	for(i = 0; i < pools.length; i++){
 		autoBalances(i)
 		getLiqTotals(i)
 	}
 }	
-
+/*
 async function getSupply(){
-	let totalSupply = await (defyAuto.methods.totalSupply().call() / 1e18)
+//	let totalSupply = parseInt(await (defyAuto.methods.totalSupply().call()) / 1e18)
 //	$('.total-supply')[0].innerHTML = '' +totalSupply.toFixed()
 		
-	let totalBurn = await (defyAuto.methods.totalBurn().call() / 1e18)
+//	let totalBurn = await (defyAuto.methods.totalBurn().call() / 1e18)
 //	$('.total-burned')[0].innerHTML = '' +totalBurn.toFixed()
 
 	//let ilpBalance = await defyAuto.methods.balanceOf(ilp).call() / 1e18
 	//$('.ilp-defy-balance')[0].innerHTML = '' +ilpBalance
-}
+    
+    let Ttvl 
+    for(let i = 0; i < pools.length; i++){
+			await autoBalances(i)
+			getLiqTotals(i)
+		}
+}*/
 
 
 //let currentDefyToBusd
@@ -102,7 +122,18 @@ async function getApePrices(){
 /* 	console.log(currentApeBnbToDefy)
 	console.log(currentApeDefyToBnb) */
 	
+     let totalSupply = await defyAuto.methods.totalSupply().call() / 1e18
+      let totalBurn = await defyAuto.methods.totalBurn().call() / 1e18
+    
 	currentApeBusdToDefy = await ilpAuto.methods.getKinsPrice(2).call() / 1e18
+    let currentKinsFTM = await ilpAuto.methods.getKinsPrice(1).call() / 1e18
+    	currentPrice = currentKinsFTM * currentBnbPriceToUsd
+	if(currentApeBusdToDefy > currentPrice){
+		currentPrice = currentApeBusdToDefy }
+	$('.kins-price')[0].innerHTML = '$ '+currentPrice.toFixed(2)
+    $('.total-supply')[0].innerHTML = '' +totalSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })
+    $('.total-burned')[0].innerHTML = '' +totalBurn.toLocaleString(undefined, { maximumFractionDigits: 0 })
+    
 	
     currentFtmToMorph = await apeContract.methods.quote(toHexString(1e18), resMorphFtm._reserve0, resMorphFtm._reserve1).call() / 1e18
     
@@ -173,7 +204,7 @@ async function getApeDefyBnbLiq(pid){
 
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
 	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
 }
 async function getApeDefyBusdLiq(pid){
@@ -183,7 +214,7 @@ async function getApeDefyBusdLiq(pid){
 	pools[pid].lpTokenValueTotal = (currentApeBusdToDefy*token0Pool)*2
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
 	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
 }
 async function getApeKinsMorphLiq(pid){
@@ -194,7 +225,7 @@ async function getApeKinsMorphLiq(pid){
 
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
-//	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
 	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
 }
 
