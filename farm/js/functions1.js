@@ -368,6 +368,12 @@ let kinsMorphApeAuto = undefined
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
+const kinsFtmPaintAddress = "0xe64f282c657e2cbaccbdce4c973e08c168049920"
+let kinsFtmPaintAuto = undefined
+
+const kinsUsdtPaintAddress = "0xaab5a826e5edcd06c21bd4f914cbd656fbb196bb"
+let kinsUsdtPaintAuto = undefined
+
 const network = 'https://rpc.ftm.tools'
 
 const defy = '0x6ECED8E16eDA61E65292f019B165542A5906ecD6'
@@ -407,7 +413,15 @@ pools.push( { name: 'APE-DEFY-BUSD', addr: "0x27A2c9CF757424142d262fc6A736C69aF6
 pools.push( { name: 'APE-DEFY-MORPH', addr: "0x865740c62ec992893a835AbA138cD3cec9b126E0", ilp: true,
 	token0: morph, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 3, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
-				
+	
+pools.push( { name: 'PAINT-KINS-FTM', addr: "0xe64f282c657e2cbaccbdce4c973e08c168049920", ilp: true,
+	token0: wbnb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 4, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		
+pools.push( { name: 'PAINT-KINS-USDC', addr: "0xaab5a826e5edcd06c21bd4f914cbd656fbb196bb", ilp: true,
+	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 5, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
 const user = {
     address: undefined,
 	bnb: 0,
