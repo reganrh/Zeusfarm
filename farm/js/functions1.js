@@ -365,6 +365,12 @@ let morphFtmApeAuto = undefined
 const kinsMorphApeAddress = "0x865740c62ec992893a835AbA138cD3cec9b126E0"
 let kinsMorphApeAuto = undefined
 
+const tombFtmAddress = "0x2A651563C9d3Af67aE0388a5c8F89b867038089e"
+let tombFtmAuto = undefined
+
+const kinsTombAddress = "0x9eEab00fB6BBFC4d75f34196DffE537325f8E45A"
+let kinsTombAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -381,6 +387,9 @@ let defyContract = undefined
 
 const morph = '0x0789ff5ba37f72abc4d561d00648acadc897b32d'
 let morphContract = undefined
+
+const tomb = '0x6c021ae822bea943b2e66552bde1d2696a53fbb7'
+let tombContract = undefined
 
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
@@ -421,6 +430,10 @@ pools.push( { name: 'PAINT-KINS-FTM', addr: "0xe64f282c657e2cbaccbdce4c973e08c16
 pools.push( { name: 'PAINT-KINS-USDC', addr: "0xaab5a826e5edcd06c21bd4f914cbd656fbb196bb", ilp: true,
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 5, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
+pools.push( { name: 'KINS-TOMB', addr: "0x9eEab00fB6BBFC4d75f34196DffE537325f8E45A", ilp: true,
+	token0: tomb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 6, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 
 const user = {
     address: undefined,
@@ -493,6 +506,7 @@ async function initContracts(){
 		}
 		await (defyContract = new web3.eth.Contract(defyABI, defy))
 		await (morphContract = new web3.eth.Contract(defyABI, morph))
+		await (tombContract = new web3.eth.Contract(defyABI, tomb))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
@@ -665,7 +679,7 @@ async function userInfo(pid){
 		*/
 	} 
 	
-	if(pid >0){
+	if(pid >0 && pid != 6){
 	//ILP Stuff
 	if(userInfo.daysSinceDeposit > 10000 )
 		$('.userInfo-days-'+pid)[0].innerHTML = ' 0'
