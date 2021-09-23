@@ -371,6 +371,18 @@ let tombFtmAuto = undefined
 const kinsTombAddress = "0x9eEab00fB6BBFC4d75f34196DffE537325f8E45A"
 let kinsTombAuto = undefined
 
+const spiritFtmAddress = "0x30748322B6E34545DBe0788C421886AEB5297789"
+let spiritFtmAuto = undefined
+
+const kinsSpiritAddress = "0x102Dc0a06a7A9fDAe5c18847Dfcfed52Feb50e3F"
+let kinsSpiritAuto = undefined
+
+const wethFtmAddress = "0x613BF4E46b4817015c01c6Bb31C7ae9edAadc26e"
+let wethFtmAuto = undefined
+
+const kinsWethAddress = "0x5E01faB296bB3C5bF9B65Cf3D04442dC02bc15b4"
+let kinsWethAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -390,6 +402,12 @@ let morphContract = undefined
 
 const tomb = '0x6c021ae822bea943b2e66552bde1d2696a53fbb7'
 let tombContract = undefined
+
+const spirit = '0x5Cc61A78F164885776AA610fb0FE1257df78E59B'
+let spiritContract = undefined
+
+const weth = '0x74b23882a30290451A17c44f4F05243b6b58C76d'
+let wethContract = undefined
 
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
@@ -434,6 +452,14 @@ pools.push( { name: 'PAINT-KINS-USDC', addr: "0xaab5a826e5edcd06c21bd4f914cbd656
 pools.push( { name: 'KINS-TOMB', addr: "0x9eEab00fB6BBFC4d75f34196DffE537325f8E45A", ilp: true,
 	token0: tomb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 6, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
+pools.push( { name: 'KINS-SPIRIT', addr: "0x102Dc0a06a7A9fDAe5c18847Dfcfed52Feb50e3F", ilp: false,
+	token0: spirit, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 7, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
+pools.push( { name: 'KINS-WETH', addr: "0x5E01faB296bB3C5bF9B65Cf3D04442dC02bc15b4", ilp: false,
+	token0: weth, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 8, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 
 const user = {
     address: undefined,
@@ -507,6 +533,8 @@ async function initContracts(){
 		await (defyContract = new web3.eth.Contract(defyABI, defy))
 		await (morphContract = new web3.eth.Contract(defyABI, morph))
 		await (tombContract = new web3.eth.Contract(defyABI, tomb))
+        await (spiritContract = new web3.eth.Contract(defyABI, spirit))
+        await (wethContract = new web3.eth.Contract(defyABI, weth))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
@@ -679,7 +707,7 @@ async function userInfo(pid){
 		*/
 	} 
 	
-	if(pid >0 && pid != 6){
+	if(6 > pid >0 ){
 	//ILP Stuff
 	if(userInfo.daysSinceDeposit > 10000 )
 		$('.userInfo-days-'+pid)[0].innerHTML = ' 0'
