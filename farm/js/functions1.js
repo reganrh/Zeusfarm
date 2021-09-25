@@ -377,6 +377,12 @@ let spiritFtmAuto = undefined
 const kinsSpiritAddress = "0x102Dc0a06a7A9fDAe5c18847Dfcfed52Feb50e3F"
 let kinsSpiritAuto = undefined
 
+const elkFtmAddress = "0xA69409Ecb11bab2f443F204e6bB55cBafFca4B58"
+let elkFtmAuto = undefined
+
+const kinsElkAddress = "0x72644252881f4da278ca811906eea5768c6bd781"
+let kinsElkAuto = undefined
+
 const wethFtmAddress = "0x613BF4E46b4817015c01c6Bb31C7ae9edAadc26e"
 let wethFtmAuto = undefined
 
@@ -405,6 +411,9 @@ let tombContract = undefined
 
 const spirit = '0x5Cc61A78F164885776AA610fb0FE1257df78E59B'
 let spiritContract = undefined
+
+const elk = '0xE1C110E1B1b4A1deD0cAf3E42BfBdbB7b5d7cE1C'
+let elkContract = undefined
 
 const weth = '0x74b23882a30290451A17c44f4F05243b6b58C76d'
 let wethContract = undefined
@@ -460,6 +469,10 @@ pools.push( { name: 'KINS-SPIRIT', addr: "0x102Dc0a06a7A9fDAe5c18847Dfcfed52Feb5
 pools.push( { name: 'KINS-WETH', addr: "0x5E01faB296bB3C5bF9B65Cf3D04442dC02bc15b4", ilp: false,
 	token0: weth, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 8, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
+pools.push( { name: 'KINS-ELK', addr: "0x72644252881f4da278ca811906eea5768c6bd781", ilp: false,
+	token0: elk, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 9, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 
 const user = {
     address: undefined,
@@ -533,6 +546,7 @@ async function initContracts(){
 		await (defyContract = new web3.eth.Contract(defyABI, defy))
 		await (morphContract = new web3.eth.Contract(defyABI, morph))
 		await (tombContract = new web3.eth.Contract(defyABI, tomb))
+		await (elkContract = new web3.eth.Contract(defyABI, elk))
         await (spiritContract = new web3.eth.Contract(defyABI, spirit))
         await (wethContract = new web3.eth.Contract(defyABI, weth))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))

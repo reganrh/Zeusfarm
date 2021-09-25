@@ -25,6 +25,7 @@ async function autoContract() {
 		await (tombAuto = new web3.eth.Contract(defyABI, tomb))
 		await (spiritAuto = new web3.eth.Contract(defyABI, spirit))
 		await (wethAuto = new web3.eth.Contract(defyABI, weth))
+		await (elkAuto = new web3.eth.Contract(defyABI, elk))
 		await (wbnbAuto = new web3.eth.Contract(wbnbABI, wbnb))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
@@ -41,6 +42,8 @@ async function autoContract() {
 		await (kinsSpiritAuto = new web3.eth.Contract(apePoolABI, kinsSpiritAddress))
         await (wethFtmAuto = new web3.eth.Contract(apePoolABI, wethFtmAddress))
 		await (kinsWethAuto = new web3.eth.Contract(apePoolABI, kinsWethAddress))
+        await (elkFtmAuto = new web3.eth.Contract(apePoolABI, elkFtmAddress))
+		await (kinsElkAuto = new web3.eth.Contract(apePoolABI, kinsElkAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -67,7 +70,8 @@ async function autoContract() {
 					pools[5].lpTokenValueTotal+
 					pools[6].lpTokenValueTotal+
 					pools[7].lpTokenValueTotal+
-					pools[8].lpTokenValueTotal
+					pools[8].lpTokenValueTotal+
+					pools[9].lpTokenValueTotal
 				).toLocaleString(undefined, { maximumFractionDigits: 0 })
 			}, 250)
 		}, 1000)
@@ -132,6 +136,7 @@ async function getApePrices(){
 	let resTombFtm = await tombFtmAuto.methods.getReserves().call()
 	let resSpiritFtm = await spiritFtmAuto.methods.getReserves().call()	
 	let resWethFtm = await wethFtmAuto.methods.getReserves().call()	
+	let resElkFtm = await elkFtmAuto.methods.getReserves().call()	
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
 	
@@ -161,6 +166,8 @@ async function getApePrices(){
     
     currentFtmToWeth = await apeContract.methods.quote(toHexString(1e18), resWethFtm._reserve1, resWethFtm._reserve0).call() / 1e18
     
+    currentFtmToElk = await apeContract.methods.quote(toHexString(1e18), resElkFtm._reserve1, resElkFtm._reserve0).call() / 1e18
+    
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
 	
@@ -184,23 +191,23 @@ async function autoBalances(pid){
     }
         
 	if(pid == 0){
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1320/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
 	}
 	if(pid == 1){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1320/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1320/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 5){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1320/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid >= 3 && pid != 5){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1320/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
 }
 function getLiqTotals(pid){
@@ -222,6 +229,8 @@ function getLiqTotals(pid){
 		getKinsSpiritLiq(pid)
     if(pid == 8)
 		getKinsWethLiq(pid)
+    if(pid == 9)
+		getKinsElkLiq(pid)
 
 
 }
@@ -321,3 +330,16 @@ async function getKinsWethLiq(pid){
 	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
 	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
 }
+
+async function getKinsElkLiq(pid){
+	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await elkAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToElk * token1Pool) + (token0Pool * currentApeBusdToDefy)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+
