@@ -190,24 +190,29 @@ async function autoBalances(pid){
 	pools[pid].totalSupply = parseInt(await contract.methods.totalSupply().call()) / 1e18
     }
         
+    
 	if(pid == 0){
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
 	}
 	if(pid == 1){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 5){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
-    if(pid >= 3 && pid != 5){
+    if(pid == 6){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1370/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    if(pid >= 7 || 5 > pid >2){
+		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
 }
 function getLiqTotals(pid){
