@@ -232,7 +232,11 @@ async function autoBalances(pid){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
-    if(10 > pid >= 7 || 5 > pid >2){
+    if(10 > pid && pid >= 7 ){
+		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    if( 5 > pid && pid >2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
