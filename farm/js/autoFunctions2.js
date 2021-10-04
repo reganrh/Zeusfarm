@@ -28,6 +28,7 @@ async function autoContract() {
 		await (wethAuto = new web3.eth.Contract(defyABI, weth))
 		await (elkAuto = new web3.eth.Contract(defyABI, elk))
 		await (wbnbAuto = new web3.eth.Contract(wbnbABI, wbnb))
+		await (mesoAuto = new web3.eth.Contract(defyABI, meso))
 		await (rndmAuto = new web3.eth.Contract(defyABI, rndm))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
@@ -48,6 +49,7 @@ async function autoContract() {
 		await (kinsElkAuto = new web3.eth.Contract(apePoolABI, kinsElkAddress))
 		await (rndmFtmAuto = new web3.eth.Contract(apePoolABI, rndmFtmAddress))
 		await (kinsRndmAuto = new web3.eth.Contract(apePoolABI, kinsRndmAddress))
+        await (mesoFtmAuto = new web3.eth.Contract(apePoolABI, mesoFtmAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -143,6 +145,7 @@ async function getApePrices(){
 	let resWethFtm = await wethFtmAuto.methods.getReserves().call()	
 	let resElkFtm = await elkFtmAuto.methods.getReserves().call()
 	let resRndmFtm = await rndmFtmAuto.methods.getReserves().call()
+	let resMesoFtm = await mesoFtmAuto.methods.getReserves().call()
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
 	
@@ -176,6 +179,8 @@ async function getApePrices(){
     
     currentFtmToRndm = await apeContract.methods.quote(toHexString(1e18), resRndmFtm._reserve1, resRndmFtm._reserve0).call() / 1e18
     
+    currentFtmToMeso = await apeContract.methods.quote(toHexString(1e18), resMesoFtm._reserve1, resMesoFtm._reserve0).call() / 1e18
+    
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
 	
@@ -187,7 +192,7 @@ async function autoBalances(pid){
 	let contract = pools[pid].contract
     let swapContract = pools[pid].swapContract
     
-    if(pid < 10){
+    if(pid != 10){
 
 	rewardPerYear = parseInt(await farmAuto.methods.kinsPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
@@ -212,38 +217,45 @@ async function autoBalances(pid){
 
     }
         
+    let totalAlloc = 720 *2
     
 	if(pid == 0){
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/100 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
 	}
 	if(pid == 1){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/200 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 5){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/35 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 6){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(10 > pid && pid >= 7 ){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if( 5 > pid && pid >2){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( 1400/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 10){
 		pools[pid].defyBal = parseInt(await rndmAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear2 / ( 1000/1000 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
+    if(pid == 11){
+		pools[pid].defyBal = parseInt(await wbnbAuto.methods.balanceOf(pools[pid].addr).call()) / currentApeBnbToDefy / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/20 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    
+
 }
 function getLiqTotals(pid){
 	if(pid == 0)
@@ -268,7 +280,8 @@ function getLiqTotals(pid){
 		getKinsElkLiq(pid)
     if(pid == 10)
 		getKinsRndmLiq(pid)
-
+    if(pid == 11)
+		getMesoFtmLiq(pid)
 
 }
 
@@ -391,4 +404,14 @@ async function getKinsRndmLiq(pid){
 	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
 	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
 }
+async function getMesoFtmLiq(pid){
+//	let token0Pool = await mesoAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = 2 * (token1Pool * currentBnbPriceToUsd)
 
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
