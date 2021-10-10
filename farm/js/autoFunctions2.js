@@ -21,6 +21,7 @@ async function autoContract() {
 			
 		await (farmAuto = new web3.eth.Contract(farmABI, farmAddress))
 		await (farmAuto2 = new web3.eth.Contract(farm2ABI, farmAddress2))
+		await (farmAuto3 = new web3.eth.Contract(farm2ABI, farmAddress3))
 		await (defyAuto = new web3.eth.Contract(defyABI, defy))
 		await (morphAuto = new web3.eth.Contract(defyABI, morph))
 		await (tombAuto = new web3.eth.Contract(defyABI, tomb))
@@ -30,6 +31,7 @@ async function autoContract() {
 		await (wbnbAuto = new web3.eth.Contract(wbnbABI, wbnb))
 		await (mesoAuto = new web3.eth.Contract(defyABI, meso))
 		await (rndmAuto = new web3.eth.Contract(defyABI, rndm))
+		await (plazaAuto = new web3.eth.Contract(defyABI, plaza))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
 		
@@ -50,6 +52,8 @@ async function autoContract() {
 		await (rndmFtmAuto = new web3.eth.Contract(apePoolABI, rndmFtmAddress))
 		await (kinsRndmAuto = new web3.eth.Contract(apePoolABI, kinsRndmAddress))
         await (mesoFtmAuto = new web3.eth.Contract(apePoolABI, mesoFtmAddress))
+		await (plazaFtmAuto = new web3.eth.Contract(apePoolABI, plazaFtmAddress))
+		await (kinsPlazaAuto = new web3.eth.Contract(apePoolABI, kinsPlazaAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -78,7 +82,8 @@ async function autoContract() {
 					pools[7].lpTokenValueTotal+
 					pools[8].lpTokenValueTotal+
 					pools[9].lpTokenValueTotal+
-					pools[10].lpTokenValueTotal
+					pools[10].lpTokenValueTotal+
+					pools[12].lpTokenValueTotal
 				).toLocaleString(undefined, { maximumFractionDigits: 0 })
 			}, 250)
 		}, 1000)
@@ -145,6 +150,7 @@ async function getApePrices(){
 	let resWethFtm = await wethFtmAuto.methods.getReserves().call()	
 	let resElkFtm = await elkFtmAuto.methods.getReserves().call()
 	let resRndmFtm = await rndmFtmAuto.methods.getReserves().call()
+	let resPlazaFtm = await plazaFtmAuto.methods.getReserves().call()
 	let resMesoFtm = await mesoFtmAuto.methods.getReserves().call()
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
@@ -181,6 +187,8 @@ async function getApePrices(){
     
     currentFtmToMeso = await apeContract.methods.quote(toHexString(1e18), resMesoFtm._reserve1, resMesoFtm._reserve0).call() / 1e18
     
+    currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resPlazaFtm._reserve1, resPlazaFtm._reserve0).call() / 1e27
+   
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
 	
@@ -192,7 +200,7 @@ async function autoBalances(pid){
 	let contract = pools[pid].contract
     let swapContract = pools[pid].swapContract
     
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 
 	rewardPerYear = parseInt(await farmAuto.methods.kinsPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
@@ -209,6 +217,18 @@ async function autoBalances(pid){
     rewardPerYear2 = parseInt(await farmAuto2.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress2).call()) / 1e18
+
+	let resLpToken = await contract.methods.getReserves().call()
+	let currentLpTokenPrice = await swapContract.methods.quote(toHexString(1e18), resLpToken._reserve1, resLpToken._reserve0).call() / 1e18
+		
+	pools[pid].totalSupply = parseInt(await contract.methods.totalSupply().call()) / 1e18
+
+    }
+    if(pid == 12 || pid == 13){
+        
+    rewardPerYear3 = parseInt(await farmAuto3.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e9
+    
+	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress3).call()) / 1e18
 
 	let resLpToken = await contract.methods.getReserves().call()
 	let currentLpTokenPrice = await swapContract.methods.quote(toHexString(1e18), resLpToken._reserve1, resLpToken._reserve0).call() / 1e18
@@ -254,7 +274,10 @@ async function autoBalances(pid){
 		pools[pid].defyBal = parseInt(await wbnbAuto.methods.balanceOf(pools[pid].addr).call()) / currentApeBnbToDefy / 1e18
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/20 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
-    
+    if(pid == 12 || pid == 13){
+		pools[pid].defyBal = parseInt(await plazaAuto.methods.balanceOf(pools[pid].addr).call()) / 1e9
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear3 / ( 4000/1000 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
 
 }
 function getLiqTotals(pid){
@@ -282,6 +305,10 @@ function getLiqTotals(pid){
 		getKinsRndmLiq(pid)
     if(pid == 11)
 		getMesoFtmLiq(pid)
+    if(pid == 12)
+		getKinsPlazaLiq(pid)
+    if(pid == 13)
+		getPlazaFtmLiq(pid)
 
 }
 
@@ -409,6 +436,29 @@ async function getMesoFtmLiq(pid){
 	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
 			
 	pools[pid].lpTokenValueTotal = 2 * (token1Pool * currentBnbPriceToUsd)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+async function getPlazaFtmLiq(pid){
+	let token0Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await plazaAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToPlaza * token1Pool) + (token0Pool * currentBnbPriceToUsd)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+
+async function getKinsPlazaLiq(pid){
+	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await plazaAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToPlaza * token1Pool) + (token0Pool * currentApeBusdToDefy)
 
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	

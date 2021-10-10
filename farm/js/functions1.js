@@ -348,6 +348,7 @@ let priceFeed = undefined
 
 let farmAuto = undefined
 let farmAuto2 = undefined
+let farmAuto3 = undefined
 let defyAuto = undefined
 let morphAuto = undefined
 let wbnbAuto = undefined
@@ -401,6 +402,12 @@ let rndmFtmAuto = undefined
 const kinsRndmAddress = "0xdfebbeabbc16285c1b3e1928f3a410e578ae09e1"
 let kinsRndmAuto = undefined
 
+const plazaFtmAddress = "0x00Ee503A551094bc6d5Cf0dc57B738929EBb2B0E"
+let plazaFtmAuto = undefined
+
+const kinsPlazaAddress = "0xF7143bbF34170222eCF7ef5a12973C69Dd432c50"
+let kinsPlazaAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -436,6 +443,9 @@ let mesoContract = undefined
 const rndm = '0x49ac072c793fb9523f0688a0d863aadfbfb5d475'
 let rndmContract = undefined
 
+const plaza = '0xc1e9d0d0a5353dee8b0fb23f1e03b21fc91566ef'
+let plazaContract = undefined
+
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
 
@@ -451,7 +461,8 @@ let farmContract = undefined
 const farmAddress2 = "0xaA06cdBD62e7f6FAb2063b1cE30aCbe6544fFd3C"
 let farm2Contract = undefined
 
-
+const farmAddress3 = "0xC178315843C4F434f2d6903b47b5cEe0D9c1C561"
+let farm3Contract = undefined
 
 var pools = []
 //ApeSwap Pools	
@@ -501,6 +512,12 @@ pools.push( { name: 'KINS-RNDM', addr: "0xdfebbeabbc16285c1b3e1928f3a410e578ae09
 pools.push( { name: 'MESO-FTM', addr: "0x0Dd94754C2BC621Ef8De2fd7A9DF2BC5283e9479", ilp: false,
 	token0: wbnb, token1: meso, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 10, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+pools.push( { name: 'KINS-PLAZA', addr: "0xF7143bbF34170222eCF7ef5a12973C69Dd432c50", ilp: false,
+	token0: defy, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
+		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+pools.push( { name: 'PLAZA-FTM', addr: "0x00Ee503A551094bc6d5Cf0dc57B738929EBb2B0E", ilp: false,
+	token0: wbnb, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
+		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 
 const user = {
     address: undefined,
@@ -579,11 +596,13 @@ async function initContracts(){
         await (wethContract = new web3.eth.Contract(defyABI, weth))
         await (mesoContract = new web3.eth.Contract(defyABI, meso))
 		await (rndmContract = new web3.eth.Contract(defyABI, rndm))
+		await (plazaContract = new web3.eth.Contract(defyABI, plaza))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
 		await (farmContract = new web3.eth.Contract(farmABI, farmAddress))
 		await (farm2Contract = new web3.eth.Contract(farm2ABI, farmAddress2))
+		await (farm3Contract = new web3.eth.Contract(farm2ABI, farmAddress3))
 		runUserStats()
 
 	}catch(e){
@@ -626,11 +645,14 @@ function toHexString(number){
 async function checkAllowance(pid){
 	let contract = pools[pid].contract
     let allowance
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	allowance = await contract.methods.allowance(user.address, farmAddress).call()
     }
     if(pid == 10){
 	allowance = await contract.methods.allowance(user.address, farmAddress2).call()
+    }
+    if(pid == 12 || pid == 13){
+	allowance = await contract.methods.allowance(user.address, farmAddress3).call()
     }
 	//console.log("Pool "+pools[pid].name+" allowance: "+allowance/1e18+'.')
 	if(allowance > 1000000 * 1e18)
@@ -643,7 +665,7 @@ async function checkAllowance(pid){
 async function approve(pid){
 	let contract = pools[pid].contract
 	let amount = toHexString(100000000 * 1e18)
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	await contract.methods.approve(farmAddress, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -669,6 +691,18 @@ async function approve(pid){
 		}
 	})
     }
+    if(pid == 12 || pid == 13){
+	await contract.methods.approve(farmAddress3, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})}
 	
 }
 let depositAmount = 0
@@ -682,7 +716,7 @@ async function maxDeposit(pid){
 }
 async function deposit(pid){
 	let amount = toHexString(depositAmount)
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	await farmContract.methods.deposit(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -708,11 +742,24 @@ async function deposit(pid){
 		}
 	})
     }
+
+    if(pid == 12 || pid == 13){
+	await farm3Contract.methods.deposit(pools[pid].pid, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})}
     
 	
 }
 async function harvest(pid){
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	await farmContract.methods.deposit(pools[pid].pid, 0).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -738,6 +785,19 @@ async function harvest(pid){
 		}
 	})
     }
+
+    if(pid == 12 || pid == 13){
+	await farm3Contract.methods.deposit(pools[pid].pid, 0).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})}
     
 	
 }
@@ -749,7 +809,7 @@ function updateWithdrawAmount(pid){
 async function withdraw(pid){
 	let amount = toHexString(withdrawAmount)
     
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	await farmContract.methods.withdraw(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -775,6 +835,20 @@ async function withdraw(pid){
 		}
 	})
     }
+
+    if(pid == 12 || pid == 13){
+	await farm3Contract.methods.withdraw(pools[pid].pid, amount).send({
+		from: user.address,
+		shouldPollResponse: true,
+	}, function(error, res){
+		if(error)
+			console.log(error)
+		else{
+			console.log(res)
+			return res
+		}
+	})
+    }
     
 	
 }
@@ -785,11 +859,14 @@ async function maxWithdraw(pid){
 
 async function pendingDefy(pid){
     let pedingReward
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	pendingReward= (parseInt(await farmContract.methods.pendingkins(pools[pid].pid, user.address).call()) / 1e18)
     }
     if(pid == 10){
 	pendingReward = (parseInt(await farm2Contract.methods.pendingReward(0, user.address).call()) / 1e18)
+    }
+    if(pid == 12 || pid == 13){
+	pendingReward = (parseInt(await farm3Contract.methods.pendingReward(pools[pid].pid, user.address).call()) / 1e9)
     }
     
 	
@@ -802,13 +879,16 @@ async function poolBalance(pid){
 	let contract = pools[pid].contract
 	let lpBalance = await contract.methods.balanceOf(user.address).call()
     
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress).call()) / 1e18
     }
     if(pid == 10){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress2).call()) / 1e18
     }
-	
+
+    if(pid == 12 || pid == 13){
+	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress3).call()) / 1e18
+    }
 	
 	//$('.pool-liq-'+pid)[0].innerHTML = "Total Staked: " +(pools[pid].lpInFarm).toFixed(4) + " " + pools[pid].name
 	
@@ -822,13 +902,15 @@ async function poolBalance(pid){
 let userInfoInt
 async function userInfo(pid){
     let userInfo
-    if(pid != 10){
+    if(pid < 10 || pid == 11){
 	userInfo = await farmContract.methods.getUserInfo(pools[pid].pid, user.address).call()
     }
     if(pid == 10){
 	userInfo = await farm2Contract.methods.getUserInfo(0, user.address).call()
     }
-	
+    if(pid == 12 || pid == 13){
+	userInfo = await farm3Contract.methods.getUserInfo(pools[pid].pid, user.address).call()
+    }
 	
 	let amount = (parseInt(userInfo.deposit) / 1e18)
 	pools[pid].userDep = parseInt(userInfo.deposit)
