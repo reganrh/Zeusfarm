@@ -417,6 +417,9 @@ let kinsFtmPaintAuto = undefined
 const kinsUsdtPaintAddress = "0xaab5a826e5edcd06c21bd4f914cbd656fbb196bb"
 let kinsUsdtPaintAuto = undefined
 
+const oliveFtmAddress = "0xf1D412010EDA1bbf09A2BCC938bc8d9EBbDc5889"
+let oliveFtmAuto = undefined
+
 const network = 'https://rpc.ftm.tools'
 
 const defy = '0x6ECED8E16eDA61E65292f019B165542A5906ecD6'
@@ -445,6 +448,9 @@ let rndmContract = undefined
 
 const plaza = '0xc1e9d0d0a5353dee8b0fb23f1e03b21fc91566ef'
 let plazaContract = undefined
+
+const olive = '0xa9937092c4e2b0277c16802cc8778d252854688a'
+let oliveContract = undefined
 
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
@@ -518,6 +524,10 @@ pools.push( { name: 'KINS-PLAZA', addr: "0xF7143bbF34170222eCF7ef5a12973C69Dd432
 pools.push( { name: 'PLAZA-FTM', addr: "0x00Ee503A551094bc6d5Cf0dc57B738929EBb2B0E", ilp: false,
 	token0: wbnb, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
 		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+
+pools.push( { name: 'OLIVE-FTM', addr: "0xf1D412010EDA1bbf09A2BCC938bc8d9EBbDc5889", ilp: false,
+	token0: wbnb, token1: olive, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 11, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
 
 const user = {
     address: undefined,
@@ -597,6 +607,7 @@ async function initContracts(){
         await (mesoContract = new web3.eth.Contract(defyABI, meso))
 		await (rndmContract = new web3.eth.Contract(defyABI, rndm))
 		await (plazaContract = new web3.eth.Contract(defyABI, plaza))
+		await (oliveContract = new web3.eth.Contract(defyABI, olive))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
@@ -645,7 +656,7 @@ function toHexString(number){
 async function checkAllowance(pid){
 	let contract = pools[pid].contract
     let allowance
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	allowance = await contract.methods.allowance(user.address, farmAddress).call()
     }
     if(pid == 10){
@@ -665,7 +676,7 @@ async function checkAllowance(pid){
 async function approve(pid){
 	let contract = pools[pid].contract
 	let amount = toHexString(100000000 * 1e18)
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	await contract.methods.approve(farmAddress, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -716,7 +727,7 @@ async function maxDeposit(pid){
 }
 async function deposit(pid){
 	let amount = toHexString(depositAmount)
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	await farmContract.methods.deposit(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -759,7 +770,7 @@ async function deposit(pid){
 	
 }
 async function harvest(pid){
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	await farmContract.methods.deposit(pools[pid].pid, 0).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -809,7 +820,7 @@ function updateWithdrawAmount(pid){
 async function withdraw(pid){
 	let amount = toHexString(withdrawAmount)
     
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	await farmContract.methods.withdraw(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -859,7 +870,7 @@ async function maxWithdraw(pid){
 
 async function pendingDefy(pid){
     let pedingReward
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	pendingReward= (parseInt(await farmContract.methods.pendingkins(pools[pid].pid, user.address).call()) / 1e18)
     }
     if(pid == 10){
@@ -879,7 +890,7 @@ async function poolBalance(pid){
 	let contract = pools[pid].contract
 	let lpBalance = await contract.methods.balanceOf(user.address).call()
     
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress).call()) / 1e18
     }
     if(pid == 10){
@@ -902,7 +913,7 @@ async function poolBalance(pid){
 let userInfoInt
 async function userInfo(pid){
     let userInfo
-    if(pid < 10 || pid == 11){
+    if(pid < 10 || pid == 11 || pid > 13){
 	userInfo = await farmContract.methods.getUserInfo(pools[pid].pid, user.address).call()
     }
     if(pid == 10){
