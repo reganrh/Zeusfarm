@@ -33,6 +33,7 @@ async function autoContract() {
 		await (rndmAuto = new web3.eth.Contract(defyABI, rndm))
 		await (plazaAuto = new web3.eth.Contract(defyABI, plaza))
 		await (oliveAuto = new web3.eth.Contract(defyABI, olive))
+		await (scareAuto = new web3.eth.Contract(defyABI, scare))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
 		
@@ -56,6 +57,8 @@ async function autoContract() {
 		await (plazaFtmAuto = new web3.eth.Contract(apePoolABI, plazaFtmAddress))
 		await (oliveFtmAuto = new web3.eth.Contract(apePoolABI, oliveFtmAddress))
 		await (kinsPlazaAuto = new web3.eth.Contract(apePoolABI, kinsPlazaAddress))
+		await (scareFtmAuto = new web3.eth.Contract(apePoolABI, scareFtmAddress))
+		await (kinsScareAuto = new web3.eth.Contract(apePoolABI, kinsScareAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -85,7 +88,8 @@ async function autoContract() {
 					pools[8].lpTokenValueTotal+
 					pools[9].lpTokenValueTotal+
 					pools[10].lpTokenValueTotal+
-					pools[12].lpTokenValueTotal
+					pools[12].lpTokenValueTotal+
+					pools[15].lpTokenValueTotal
 				).toLocaleString(undefined, { maximumFractionDigits: 0 })
 			}, 250)
 		}, 1000)
@@ -155,6 +159,7 @@ async function getApePrices(){
 	let resPlazaFtm = await plazaFtmAuto.methods.getReserves().call()
 	let resMesoFtm = await mesoFtmAuto.methods.getReserves().call()
 	let resOliveFtm = await oliveFtmAuto.methods.getReserves().call()
+	let resScareFtm = await scareFtmAuto.methods.getReserves().call()
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
 	
@@ -193,6 +198,8 @@ async function getApePrices(){
     currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resPlazaFtm._reserve1, resPlazaFtm._reserve0).call() / 1e27
     
     currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resOliveFtm._reserve1, resOliveFtm._reserve0).call() / 1e18
+    
+    currentFtmToScare = await apeContract.methods.quote(toHexString(1e18), resScareFtm._reserve1, resScareFtm._reserve0).call() / 1e18
    
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
@@ -205,7 +212,7 @@ async function autoBalances(pid){
 	let contract = pools[pid].contract
     let swapContract = pools[pid].swapContract
     
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 
 	rewardPerYear = parseInt(await farmAuto.methods.kinsPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
@@ -217,7 +224,7 @@ async function autoBalances(pid){
 	pools[pid].totalSupply = parseInt(await contract.methods.totalSupply().call()) / 1e18
     }
     }
-    if(pid == 10 ){
+    if(pools[pid].master == 2 ){
         
     rewardPerYear2 = parseInt(await farmAuto2.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
@@ -229,7 +236,7 @@ async function autoBalances(pid){
 	pools[pid].totalSupply = parseInt(await contract.methods.totalSupply().call()) / 1e18
 
     }
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
         
     rewardPerYear3 = parseInt(await farmAuto3.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e9
     
@@ -242,7 +249,7 @@ async function autoBalances(pid){
 
     }
         
-    let totalAlloc = 745 *2
+    let totalAlloc = 770 *2
     
 	if(pid == 0){
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/200 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
@@ -287,6 +294,10 @@ async function autoBalances(pid){
 		pools[pid].defyBal = parseInt(await wbnbAuto.methods.balanceOf(pools[pid].addr).call()) / currentApeBnbToDefy / 1e18
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
+    if(pid == 15 ){
+		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
 
 }
 function getLiqTotals(pid){
@@ -320,6 +331,8 @@ function getLiqTotals(pid){
 		getPlazaFtmLiq(pid)
     if(pid == 14)
 		getOliveFtmLiq(pid)
+    if(pid == 15)
+		getKinsScareLiq(pid)
 
 }
 
@@ -481,6 +494,17 @@ async function getOliveFtmLiq(pid){
 	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
 			
 	pools[pid].lpTokenValueTotal = 2 * (token1Pool * currentBnbPriceToUsd)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+async function getKinsScareLiq(pid){
+	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await scareAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToScare * token1Pool) + (token0Pool * currentApeBusdToDefy)
 
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	

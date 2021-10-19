@@ -408,6 +408,12 @@ let plazaFtmAuto = undefined
 const kinsPlazaAddress = "0xF7143bbF34170222eCF7ef5a12973C69Dd432c50"
 let kinsPlazaAuto = undefined
 
+const scareFtmAddress = "0xD6B312D05faDBa48eC6B899dD7Db61e79fc36681"
+let scareFtmAuto = undefined
+
+const kinsScareAddress = "0x368f85f4eac9895ef04d9da502ef081ad95fcf47"
+let kinsScareAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -452,6 +458,9 @@ let plazaContract = undefined
 const olive = '0xa9937092c4e2b0277c16802cc8778d252854688a'
 let oliveContract = undefined
 
+const scare = '0x46e1ee17f51c52661d04238f1700c547de3b84a1'
+let scareContract = undefined
+
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
 
@@ -474,60 +483,64 @@ var pools = []
 //ApeSwap Pools	
 pools.push( { name: 'KINS', addr: "0x6ECED8E16eDA61E65292f019B165542A5906ecD6", ilp: false,
 	token0: defy, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 		
 
 pools.push( { name: 'APE-DEFY-BNB', addr: "0xD24cf15F02D1cC4C868C303925aDF247118CAd9B", ilp: true,
 	token0: wbnb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0,
-		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 		
 pools.push( { name: 'APE-DEFY-BUSD', addr: "0x27A2c9CF757424142d262fc6A736C69aF62F1159", ilp: true,
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e6, lpTokenValueTotal: 0, 
-		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 		
 pools.push( { name: 'APE-DEFY-MORPH', addr: "0x865740c62ec992893a835AbA138cD3cec9b126E0", ilp: true,
 	token0: morph, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 3, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 3, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 	
 pools.push( { name: 'PAINT-KINS-FTM', addr: "0xe64f282c657e2cbaccbdce4c973e08c168049920", ilp: true,
 	token0: wbnb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 4, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 4, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 		
 pools.push( { name: 'PAINT-KINS-USDC', addr: "0xaab5a826e5edcd06c21bd4f914cbd656fbb196bb", ilp: true,
 	token0: busd, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 5, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 5, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 pools.push( { name: 'KINS-TOMB', addr: "0x9eEab00fB6BBFC4d75f34196DffE537325f8E45A", ilp: true,
 	token0: tomb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 6, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 6, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 pools.push( { name: 'KINS-SPIRIT', addr: "0x102Dc0a06a7A9fDAe5c18847Dfcfed52Feb50e3F", ilp: false,
 	token0: spirit, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 7, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 7, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 pools.push( { name: 'KINS-WETH', addr: "0x5E01faB296bB3C5bF9B65Cf3D04442dC02bc15b4", ilp: false,
 	token0: weth, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 8, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 8, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 pools.push( { name: 'KINS-ELK', addr: "0x72644252881f4da278ca811906eea5768c6bd781", ilp: false,
 	token0: elk, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 9, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 9, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 pools.push( { name: 'KINS-RNDM', addr: "0xdfebbeabbc16285c1b3e1928f3a410e578ae09e1", ilp: false,
 	token0: rndm, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:2} )
 pools.push( { name: 'MESO-FTM', addr: "0x0Dd94754C2BC621Ef8De2fd7A9DF2BC5283e9479", ilp: false,
 	token0: wbnb, token1: meso, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 10, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 10, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 pools.push( { name: 'KINS-PLAZA', addr: "0xF7143bbF34170222eCF7ef5a12973C69Dd432c50", ilp: false,
 	token0: defy, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
-		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
 pools.push( { name: 'PLAZA-FTM', addr: "0x00Ee503A551094bc6d5Cf0dc57B738929EBb2B0E", ilp: false,
 	token0: wbnb, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
-		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
 
 pools.push( { name: 'OLIVE-FTM', addr: "0xf1D412010EDA1bbf09A2BCC938bc8d9EBbDc5889", ilp: false,
 	token0: wbnb, token1: olive, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 11, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI } )
+		pid: 11, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
+
+pools.push( { name: 'KINS-SCARE', addr: "0x368f85f4eac9895ef04d9da502ef081ad95fcf47", ilp: false,
+	token0: defy, token1: scare, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 12, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 const user = {
     address: undefined,
@@ -608,6 +621,7 @@ async function initContracts(){
 		await (rndmContract = new web3.eth.Contract(defyABI, rndm))
 		await (plazaContract = new web3.eth.Contract(defyABI, plaza))
 		await (oliveContract = new web3.eth.Contract(defyABI, olive))
+		await (scareContract = new web3.eth.Contract(defyABI, scare))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))
@@ -656,13 +670,13 @@ function toHexString(number){
 async function checkAllowance(pid){
 	let contract = pools[pid].contract
     let allowance
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	allowance = await contract.methods.allowance(user.address, farmAddress).call()
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	allowance = await contract.methods.allowance(user.address, farmAddress2).call()
     }
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	allowance = await contract.methods.allowance(user.address, farmAddress3).call()
     }
 	//console.log("Pool "+pools[pid].name+" allowance: "+allowance/1e18+'.')
@@ -676,7 +690,7 @@ async function checkAllowance(pid){
 async function approve(pid){
 	let contract = pools[pid].contract
 	let amount = toHexString(100000000 * 1e18)
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	await contract.methods.approve(farmAddress, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -689,7 +703,7 @@ async function approve(pid){
 		}
 	})
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	await contract.methods.approve(farmAddress2, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -702,7 +716,7 @@ async function approve(pid){
 		}
 	})
     }
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	await contract.methods.approve(farmAddress3, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -727,7 +741,7 @@ async function maxDeposit(pid){
 }
 async function deposit(pid){
 	let amount = toHexString(depositAmount)
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	await farmContract.methods.deposit(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -740,7 +754,7 @@ async function deposit(pid){
 		}
 	})
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	await farm2Contract.methods.deposit(0, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -754,7 +768,7 @@ async function deposit(pid){
 	})
     }
 
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	await farm3Contract.methods.deposit(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -770,7 +784,7 @@ async function deposit(pid){
 	
 }
 async function harvest(pid){
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	await farmContract.methods.deposit(pools[pid].pid, 0).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -783,7 +797,7 @@ async function harvest(pid){
 		}
 	})
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	await farm2Contract.methods.deposit(0, 0).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -797,7 +811,7 @@ async function harvest(pid){
 	})
     }
 
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	await farm3Contract.methods.deposit(pools[pid].pid, 0).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -820,7 +834,7 @@ function updateWithdrawAmount(pid){
 async function withdraw(pid){
 	let amount = toHexString(withdrawAmount)
     
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	await farmContract.methods.withdraw(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -833,7 +847,7 @@ async function withdraw(pid){
 		}
 	})
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	await farm2Contract.methods.withdraw(0, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -847,7 +861,7 @@ async function withdraw(pid){
 	})
     }
 
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	await farm3Contract.methods.withdraw(pools[pid].pid, amount).send({
 		from: user.address,
 		shouldPollResponse: true,
@@ -870,13 +884,13 @@ async function maxWithdraw(pid){
 
 async function pendingDefy(pid){
     let pedingReward
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	pendingReward= (parseInt(await farmContract.methods.pendingkins(pools[pid].pid, user.address).call()) / 1e18)
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	pendingReward = (parseInt(await farm2Contract.methods.pendingReward(0, user.address).call()) / 1e18)
     }
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	pendingReward = (parseInt(await farm3Contract.methods.pendingReward(pools[pid].pid, user.address).call()) / 1e9)
     }
     
@@ -890,14 +904,14 @@ async function poolBalance(pid){
 	let contract = pools[pid].contract
 	let lpBalance = await contract.methods.balanceOf(user.address).call()
     
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress).call()) / 1e18
     }
-    if(pid == 10){
+    if(pools[pid].master == 2){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress2).call()) / 1e18
     }
 
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress3).call()) / 1e18
     }
 	
@@ -913,13 +927,13 @@ async function poolBalance(pid){
 let userInfoInt
 async function userInfo(pid){
     let userInfo
-    if(pid < 10 || pid == 11 || pid > 13){
+    if(pools[pid].master == 1){
 	userInfo = await farmContract.methods.getUserInfo(pools[pid].pid, user.address).call()
     }
-    if(pid == 10){
-	userInfo = await farm2Contract.methods.getUserInfo(0, user.address).call()
+    if(pools[pid].master == 2){
+	userInfo = await farm2Contract.methods.getUserInfo(pools[pid].pid, user.address).call()
     }
-    if(pid == 12 || pid == 13){
+    if(pools[pid].master == 3){
 	userInfo = await farm3Contract.methods.getUserInfo(pools[pid].pid, user.address).call()
     }
 	
