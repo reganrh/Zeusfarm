@@ -414,6 +414,12 @@ let scareFtmAuto = undefined
 const kinsScareAddress = "0x368f85f4eac9895ef04d9da502ef081ad95fcf47"
 let kinsScareAuto = undefined
 
+const tcuzFtmAddress = "0x0b7528b304fa3b89a3d1d2c4b958134512464097"
+let tcuzFtmAuto = undefined
+
+const kinsTcuzAddress = "0x54f415fd76159ad483adcd1d5d565284f529eb6c"
+let kinsTcuzAuto = undefined
+
 const defyBusdApeAddress = "0x27A2c9CF757424142d262fc6A736C69aF62F1159"
 let defyBusdApeAuto = undefined
 
@@ -461,6 +467,9 @@ let oliveContract = undefined
 const scare = '0x46e1ee17f51c52661d04238f1700c547de3b84a1'
 let scareContract = undefined
 
+const tcuz = '0x8e4A2fA6e651DF75F7F4E9e9Ac81f8f9347a4aDD'
+let tcuzContract = undefined
+
 const ilp = '0x566477676926e17D11885b0424986dd7fD2027C3'
 let ilpContract = undefined
 
@@ -483,8 +492,7 @@ var pools = []
 //ApeSwap Pools	
 pools.push( { name: 'KINS', addr: "0x6ECED8E16eDA61E65292f019B165542A5906ecD6", ilp: false,
 	token0: defy, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
-		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
-		
+		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )		
 
 pools.push( { name: 'APE-DEFY-BNB', addr: "0xD24cf15F02D1cC4C868C303925aDF247118CAd9B", ilp: true,
 	token0: wbnb, token1: defy, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0,
@@ -541,6 +549,14 @@ pools.push( { name: 'OLIVE-FTM', addr: "0xf1D412010EDA1bbf09A2BCC938bc8d9EBbDc58
 pools.push( { name: 'KINS-SCARE', addr: "0x368f85f4eac9895ef04d9da502ef081ad95fcf47", ilp: false,
 	token0: defy, token1: scare, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
 		pid: 12, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
+
+pools.push( { name: 'KINS-TCUZ', addr: "0x54f415fd76159ad483adcd1d5d565284f529eb6c", ilp: false,
+	token0: defy, token1: tcuz, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 13, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
+
+pools.push( { name: 'FTM-TCUZ', addr: "0x0b7528b304fa3b89a3d1d2c4b958134512464097", ilp: false,
+	token0: wbnb, token1: tcuz, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
+		pid: 14, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 
 const user = {
     address: undefined,
@@ -622,6 +638,7 @@ async function initContracts(){
 		await (plazaContract = new web3.eth.Contract(defyABI, plaza))
 		await (oliveContract = new web3.eth.Contract(defyABI, olive))
 		await (scareContract = new web3.eth.Contract(defyABI, scare))
+		await (tcuzContract = new web3.eth.Contract(defyABI, tcuz))
 		await (wbnbContract = new web3.eth.Contract(poolABI, wbnb))
 		await (busdContract = new web3.eth.Contract(poolABI, busd))
 		await (ilpContract = new web3.eth.Contract(ilpABI, ilp))

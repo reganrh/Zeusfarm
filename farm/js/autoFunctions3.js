@@ -34,6 +34,7 @@ async function autoContract() {
 		await (plazaAuto = new web3.eth.Contract(defyABI, plaza))
 		await (oliveAuto = new web3.eth.Contract(defyABI, olive))
 		await (scareAuto = new web3.eth.Contract(defyABI, scare))
+		await (tcuzAuto = new web3.eth.Contract(defyABI, tcuz))
 		await (busdAuto = new web3.eth.Contract(wbnbABI, busd))
 		await (ilpAuto = new web3.eth.Contract(ilpABI, ilp))
 		
@@ -59,6 +60,8 @@ async function autoContract() {
 		await (kinsPlazaAuto = new web3.eth.Contract(apePoolABI, kinsPlazaAddress))
 		await (scareFtmAuto = new web3.eth.Contract(apePoolABI, scareFtmAddress))
 		await (kinsScareAuto = new web3.eth.Contract(apePoolABI, kinsScareAddress))
+		await (tcuzFtmAuto = new web3.eth.Contract(apePoolABI, tcuzFtmAddress))
+		await (kinsTcuzAuto = new web3.eth.Contract(apePoolABI, kinsTcuzAddress))
 		await (defyBusdApeAuto = new web3.eth.Contract(apePoolABI, defyBusdApeAddress))
 		
     
@@ -160,6 +163,7 @@ async function getApePrices(){
 	let resMesoFtm = await mesoFtmAuto.methods.getReserves().call()
 	let resOliveFtm = await oliveFtmAuto.methods.getReserves().call()
 	let resScareFtm = await scareFtmAuto.methods.getReserves().call()
+	let resTcuzFtm = await tcuzFtmAuto.methods.getReserves().call()
 	let roundData = await priceFeed.methods.latestRoundData().call()
 	currentBnbPriceToUsd = roundData.answer / 1e8
 	
@@ -200,6 +204,8 @@ async function getApePrices(){
     currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resOliveFtm._reserve1, resOliveFtm._reserve0).call() / 1e18
     
     currentFtmToScare = await apeContract.methods.quote(toHexString(1e18), resScareFtm._reserve1, resScareFtm._reserve0).call() / 1e18
+    
+    currentFtmToTcuz = await apeContract.methods.quote(toHexString(1e18), resTcuzFtm._reserve1, resTcuzFtm._reserve0).call() / 1e18
    
 //	$('.defy-bnb-price')[0].innerHTML = '1 BNB = ~'+currentApeBnbToDefy.toFixed(2)+' DEFY'
 //	$('.kins-price')[0].innerHTML = '$'+currentApeBusdToDefy.toFixed(2)
@@ -249,7 +255,7 @@ async function autoBalances(pid){
 
     }
         
-    let totalAlloc = 770 *2
+    let totalAlloc = 850 *2
     
 	if(pid == 0){
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/200 * (pools[pid].lpInFarm)) * 100).toFixed(2) + '%'
@@ -280,7 +286,7 @@ async function autoBalances(pid){
 	}
     if(pid == 10){
 		pools[pid].defyBal = parseInt(await rndmAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear2 / ( 1000/1000 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear2 / ( 1000/500 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 11){
 		pools[pid].defyBal = parseInt(await wbnbAuto.methods.balanceOf(pools[pid].addr).call()) / currentApeBnbToDefy / 1e18
@@ -296,7 +302,15 @@ async function autoBalances(pid){
 	}
     if(pid == 15 ){
 		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
-		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/25 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    if(pid == 16){
+		pools[pid].defyBal = parseInt(await defyAuto.methods.balanceOf(pools[pid].addr).call()) / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
+	}
+    if(pid == 17){
+		pools[pid].defyBal = parseInt(await wbnbAuto.methods.balanceOf(pools[pid].addr).call()) / currentApeBnbToDefy / 1e18
+		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/40 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
 
 }
@@ -333,6 +347,10 @@ function getLiqTotals(pid){
 		getOliveFtmLiq(pid)
     if(pid == 15)
 		getKinsScareLiq(pid)
+    if(pid == 16)
+		getKinsTcuzLiq(pid)
+    if(pid == 17)
+		getFtmTcuzLiq(pid)
 
 }
 
@@ -505,6 +523,28 @@ async function getKinsScareLiq(pid){
 	let token1Pool = await scareAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
 			
 	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToScare * token1Pool) + (token0Pool * currentApeBusdToDefy)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+async function getKinsTcuzLiq(pid){
+	let token0Pool = await defyAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+	let token1Pool = await tcuzAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+			
+	pools[pid].lpTokenValueTotal = (currentBnbPriceToUsd * currentFtmToTcuz * token1Pool) + (token0Pool * currentApeBusdToDefy)
+
+	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
+	
+	$('.pool-liq-'+pid)[0].innerHTML = "" + totalLiqInFarm.toFixed(2)+'$'
+	$('.total-pool-liq-'+pid)[0].innerHTML = "" + pools[pid].lpTokenValueTotal.toFixed(2)+'$'
+}
+async function getFtmTcuzLiq(pid){
+//	let token0Pool = await mesoAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token1Dec
+	let token1Pool = await wbnbAuto.methods.balanceOf(pools[pid].addr).call() / pools[pid].token0Dec
+			
+	pools[pid].lpTokenValueTotal = 2 * (token1Pool * currentBnbPriceToUsd)
 
 	let totalLiqInFarm = pools[pid].lpTokenValueTotal * (pools[pid].lpInFarm*1e18) / (pools[pid].totalSupply*1e18)
 	
