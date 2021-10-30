@@ -149,6 +149,7 @@ let currentApeDefyToBnb
 let currentApeBusdToDefy = 0
 let currentFtmToMorph = 0
 let currentFtmToTomb = 0
+let currentFtmToPlaza = 0
 
 async function getApePrices(){
 	let resDefyBnb = await defyBnbApeAuto.methods.getReserves().call()	
@@ -201,7 +202,7 @@ async function getApePrices(){
     
     currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resPlazaFtm._reserve1, resPlazaFtm._reserve0).call() / 1e27
     
-    currentFtmToPlaza = await apeContract.methods.quote(toHexString(1e18), resOliveFtm._reserve1, resOliveFtm._reserve0).call() / 1e18
+    currentFtmToOlive = await apeContract.methods.quote(toHexString(1e18), resOliveFtm._reserve1, resOliveFtm._reserve0).call() / 1e18
     
     currentFtmToScare = await apeContract.methods.quote(toHexString(1e18), resScareFtm._reserve1, resScareFtm._reserve0).call() / 1e18
     
@@ -293,7 +294,7 @@ async function autoBalances(pid){
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/20 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 12 || pid == 13){
-		pools[pid].defyBal = parseInt(await plazaAuto.methods.balanceOf(pools[pid].addr).call()) / 1e9
+		pools[pid].defyBal = parseInt(await plazaAuto.methods.balanceOf(pools[pid].addr).call()) / currentFtmToPlaza / 1e9 
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear3 / ( 4000/1000 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 14){

@@ -485,7 +485,7 @@ let farmContract = undefined
 const farmAddress2 = "0xaA06cdBD62e7f6FAb2063b1cE30aCbe6544fFd3C"
 let farm2Contract = undefined
 
-const farmAddress3 = "0xC178315843C4F434f2d6903b47b5cEe0D9c1C561"
+const farmAddress3 = "0xBa2f876ae237ee3A160930f9cc316c29B7bF0281"
 let farm3Contract = undefined
 
 var pools = []
@@ -537,10 +537,10 @@ pools.push( { name: 'MESO-FTM', addr: "0x0Dd94754C2BC621Ef8De2fd7A9DF2BC5283e947
 		pid: 10, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:1} )
 pools.push( { name: 'KINS-PLAZA', addr: "0xF7143bbF34170222eCF7ef5a12973C69Dd432c50", ilp: false,
 	token0: defy, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
-		pid: 0, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
+		pid: 2, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
 pools.push( { name: 'PLAZA-FTM', addr: "0x00Ee503A551094bc6d5Cf0dc57B738929EBb2B0E", ilp: false,
 	token0: wbnb, token1: plaza, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e9, lpTokenValueTotal: 0, 
-		pid: 1, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
+		pid: 3, userDep: 0, defyBal: 0, ABI: apePoolABI, swapABI: apeABI , master:3} )
 
 pools.push( { name: 'OLIVE-FTM', addr: "0xf1D412010EDA1bbf09A2BCC938bc8d9EBbDc5889", ilp: false,
 	token0: wbnb, token1: olive, contract: '', swapContract: '', swapAddr: apeAddress, token0Dec: 1e18, token1Dec: 1e18, lpTokenValueTotal: 0, 
@@ -908,7 +908,7 @@ async function pendingDefy(pid){
 	pendingReward = (parseInt(await farm2Contract.methods.pendingReward(0, user.address).call()) / 1e18)
     }
     if(pools[pid].master == 3){
-	pendingReward = (parseInt(await farm3Contract.methods.pendingReward(pools[pid].pid, user.address).call()) / 1e9)
+	pendingReward = (parseInt(await farm3Contract.methods.pendingReward(pools[pid].pid, user.address).call()) / 1e18)
     }
     
 	
