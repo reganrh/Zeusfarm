@@ -245,7 +245,7 @@ async function autoBalances(pid){
     }
     if(pools[pid].master == 3){
         
-    rewardPerYear3 = parseInt(await farmAuto3.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e9
+    rewardPerYear3 = parseInt(await farmAuto3.methods.rewardPerBlock().call()) * 60 * 60 * 24 * 365 / 1e18
     
 	pools[pid].lpInFarm = parseInt(await contract.methods.balanceOf(farmAddress3).call()) / 1e18
 
@@ -294,7 +294,7 @@ async function autoBalances(pid){
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear / ( totalAlloc/20 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 12 || pid == 13){
-		pools[pid].defyBal = parseInt(await plazaAuto.methods.balanceOf(pools[pid].addr).call()) / currentFtmToPlaza / 1e9 
+		pools[pid].defyBal = parseInt(await plazaAuto.methods.balanceOf(pools[pid].addr).call()) * currentFtmToPlaza / 1e9 
 		$('.pool-apy-'+pid)[0].innerHTML = '' + (rewardPerYear3 / ( 4000/1000 * (pools[pid].lpInFarm / pools[pid].totalSupply) * pools[pid].defyBal) * 100).toFixed(2) + '%'
 	}
     if(pid == 14){
